@@ -10,20 +10,23 @@ export function Reveal({
   delay = 0,
   className,
   as = "div",
+  onMount = false,
 }: {
   children: React.ReactNode;
   delay?: number;
   className?: string;
   as?: "div" | "section" | "li" | "p";
+  // داخل التطبيق نحرّك العنصر أول ما يظهر، بدل ما ننتظر التمرير.
+  onMount?: boolean;
 }) {
   const Tag = motion[as];
+  const shown = { opacity: 1, y: 0, filter: "blur(0px)" };
   return (
     <Tag
       className={className}
-      initial={{ opacity: 0, y: 28, filter: "blur(10px)" }}
-      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-      viewport={{ once: true, margin: "-10% 0px" }}
-      transition={{ duration: 1.1, ease: EASE, delay }}
+      initial={{ opacity: 0, y: onMount ? 16 : 28, filter: "blur(10px)" }}
+      {...(onMount ? { animate: shown } : { whileInView: shown, viewport: { once: true, amount: 0.15 } })}
+      transition={{ duration: onMount ? 0.9 : 1.1, ease: EASE, delay }}
     >
       {children}
     </Tag>

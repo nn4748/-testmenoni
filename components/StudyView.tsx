@@ -1,11 +1,12 @@
 "use client";
 
+import { motion } from "motion/react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { isArabic } from "@/lib/text";
 import { useDoc } from "@/lib/useDoc";
-import { CardsIcon, ChevronIcon, FileIcon, QuizIcon, SummaryIcon } from "./Icons";
+import { CardsIcon, ChevronIcon, QuizIcon, SummaryIcon } from "./Icons";
 import FlashcardsPanel from "./FlashcardsPanel";
 import QuizPanel from "./QuizPanel";
 import Spinner from "./Spinner";
@@ -49,25 +50,28 @@ export default function StudyView() {
   const words = doc.text.split(/\s+/).length;
 
   return (
-    <div className="page space-y-5 pt-2">
-      <section className="flex items-start gap-3">
-        <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-text text-bg shadow-lg">
-          <FileIcon className="size-6" />
-        </span>
-        <div className="min-w-0 space-y-2">
-          <h1 className="text-xl font-bold leading-snug">
-            <bdi>{doc.title}</bdi>
-          </h1>
-          <div className="flex flex-wrap gap-1.5 text-xs text-muted">
-            {doc.pages ? <Badge>{doc.pages.toLocaleString("ar-EG")} صفحة</Badge> : null}
-            <Badge>{words.toLocaleString("ar-EG")} كلمة</Badge>
-            <Badge>{isArabic(doc.text) ? "عربي" : "English"}</Badge>
-          </div>
+    <div className="page space-y-6 pt-4">
+      <motion.header
+        className="space-y-4"
+        initial={{ opacity: 0, y: 16, filter: "blur(8px)" }}
+        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <p className="eyebrow" dir="ltr">
+          Study set · {doc.source === "pdf" ? "PDF" : "Text"}
+        </p>
+        <h1 className="text-[1.75rem] font-semibold leading-[1.3] sm:text-[2.25rem]">
+          <bdi>{doc.title}</bdi>
+        </h1>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-faint">
+          {doc.pages ? <span className="tabular-nums">{doc.pages.toLocaleString("ar-EG")} صفحة</span> : null}
+          <span className="tabular-nums">{words.toLocaleString("ar-EG")} كلمة</span>
+          <span>{isArabic(doc.text) ? "عربي" : "English"}</span>
         </div>
-      </section>
+      </motion.header>
 
       <div role="tablist" className="sticky top-[4.5rem] z-[5] -mx-4 px-4 py-2">
-        <div className="grid grid-cols-3 gap-1 rounded-2xl border border-border bg-[var(--glass)] p-1 shadow-lux backdrop-blur-2xl">
+        <div className="grid grid-cols-3 rounded-2xl border border-border bg-[var(--glass)] p-1 shadow-lux backdrop-blur-2xl backdrop-saturate-150">
           {TABS.map(({ id: tabId, label, icon: Icon }) => (
             <button
               key={tabId}
@@ -77,12 +81,19 @@ export default function StudyView() {
                 setTab(tabId);
                 setOpened((o) => new Set(o).add(tabId));
               }}
-              className={`flex h-10 items-center justify-center gap-1.5 rounded-lg text-sm font-medium transition ${
-                tab === tabId ? "bg-surface text-text shadow-sm" : "text-muted hover:text-text"
+              className={`relative flex h-10 items-center justify-center gap-1.5 rounded-xl text-sm font-medium transition-colors duration-300 ${
+                tab === tabId ? "text-bg" : "text-faint hover:text-muted"
               }`}
             >
-              <Icon className="size-4" />
-              {label}
+              {tab === tabId && (
+                <motion.span
+                  layoutId="study-tab"
+                  className="absolute inset-0 rounded-xl bg-text shadow-[0_8px_24px_-12px_var(--text)]"
+                  transition={{ type: "spring", stiffness: 380, damping: 34 }}
+                />
+              )}
+              <Icon className="relative size-4" />
+              <span className="relative">{label}</span>
             </button>
           ))}
         </div>
@@ -106,12 +117,13 @@ export default function StudyView() {
       )}
 
       <details className="surface group">
-        <summary className="flex cursor-pointer list-none items-center justify-between p-4 font-medium">
-          النص المستخرج من الملزمة
+        <summary className="flex cursor-pointer list-none items-center justify-between p-4 text-sm font-medium text-muted">
+          النص الأصلي من الملزمة
           <ChevronIcon className="size-4 text-muted transition group-open:rotate-180" />
         </summary>
         <p
           dir="auto"
+          data-lenis-prevent
           className="max-h-96 overflow-y-auto whitespace-pre-line border-t border-border p-4 text-sm leading-7 text-muted"
         >
           {doc.text}
@@ -119,8 +131,4 @@ export default function StudyView() {
       </details>
     </div>
   );
-}
-
-function Badge({ children }: { children: React.ReactNode }) {
-  return <span className="rounded-full border border-border bg-surface px-2.5 py-0.5">{children}</span>;
 }
