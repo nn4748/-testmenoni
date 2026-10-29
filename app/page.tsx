@@ -111,8 +111,8 @@ export default function Home() {
         <Reveal delay={0.15}>
           <UploadForm />
         </Reveal>
-        <p className="flex items-center justify-center gap-1.5 text-xs text-faint">
-          <LockIcon className="size-3.5" />
+        <p className="text-center text-xs leading-6 text-faint">
+          <LockIcon className="me-1.5 inline size-3.5 align-[-2px]" />
           ما نخزّن ملفاتك عندنا. تنحفظ في جهازك، بدون تسجيل دخول.
         </p>
       </section>

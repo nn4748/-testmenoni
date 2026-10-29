@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "motion/react";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AppError, MESSAGES } from "@/lib/errors";
@@ -13,6 +14,7 @@ import {
   titleFromText,
 } from "@/lib/text";
 import type { ApiError, StudyDoc } from "@/lib/types";
+import GeneratingState from "./GeneratingState";
 import { CloseIcon, FileIcon, UploadIcon } from "./Icons";
 import Spinner from "./Spinner";
 
@@ -93,19 +95,23 @@ export default function UploadForm() {
       setBusy(false);
     }
   }
-
   const canSubmit = !busy && (mode === "pdf" ? !!file : pasted.trim().length > 0);
   const chars = pasted.trim().length;
 
   return (
-    <form
-      onSubmit={submit}
-      className="surface animate-rise space-y-4 rounded-3xl p-4 [animation-delay:120ms] sm:p-5"
-    >
-      <div role="tablist" className="grid grid-cols-2 gap-1 rounded-xl bg-surface-2 p-1">
+    <form onSubmit={submit} className="surface space-y-4 rounded-[1.75rem] p-3 sm:p-4">
+      {busy && (
+        <GeneratingState
+          variant="overlay"
+          steps={mode === "pdf" ? ["نفتح الملف…", "نقرأ الصفحات…", "نجهّز المذاكرة…"] : ["نرتّب النص…", "نجهّز المذاكرة…"]}
+          hint="ثواني بس"
+        />
+      )}
+
+      <div role="tablist" className="relative grid grid-cols-2 rounded-2xl bg-surface-2 p-1">
         {(
           [
-            ["pdf", "رفع ملف PDF"],
+            ["pdf", "ملف PDF"],
             ["text", "لصق نص"],
           ] as const
         ).map(([value, label]) => (
@@ -119,26 +125,33 @@ export default function UploadForm() {
               setMode(value);
               setError(null);
             }}
-            className={`h-10 rounded-lg text-sm font-medium transition ${
-              mode === value ? "bg-surface text-text shadow-sm" : "text-muted hover:text-text"
+            className={`relative h-10 rounded-xl text-sm font-medium transition-colors duration-300 ${
+              mode === value ? "text-text" : "text-faint hover:text-muted"
             }`}
           >
-            {label}
+            {mode === value && (
+              <motion.span
+                layoutId="upload-tab"
+                className="absolute inset-0 rounded-xl border border-border bg-surface shadow-lux"
+                transition={{ type: "spring", stiffness: 380, damping: 32 }}
+              />
+            )}
+            <span className="relative">{label}</span>
           </button>
         ))}
       </div>
 
       {mode === "pdf" ? (
         file ? (
-          <div className="flex items-center gap-3 rounded-2xl border border-border bg-surface-2 p-3">
-            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-text text-bg">
+          <div className="flex items-center gap-3 rounded-2xl border border-border-strong bg-surface-2 p-3">
+            <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-gradient-to-b from-neutral-700 to-black text-white ring-1 ring-white/10">
               <FileIcon className="size-6" />
             </span>
             <div className="min-w-0 flex-1">
               <p className="truncate font-medium" dir="auto">
                 {file.name}
               </p>
-              <p className="text-xs text-muted">{(file.size / 1024 / 1024).toFixed(1)} ميجا · PDF</p>
+              <p className="text-xs tabular-nums text-faint">{(file.size / 1024 / 1024).toFixed(1)} MB · PDF</p>
             </div>
             <button
               type="button"
@@ -148,7 +161,7 @@ export default function UploadForm() {
                 if (inputRef.current) inputRef.current.value = "";
               }}
               aria-label="إزالة الملف"
-              className="grid size-9 place-items-center rounded-full text-muted hover:bg-surface hover:text-text"
+              className="btn-ghost size-9 p-0"
             >
               <CloseIcon />
             </button>
@@ -167,16 +180,15 @@ export default function UploadForm() {
               pickFile(e.dataTransfer.files[0]);
             }}
             onClick={() => inputRef.current?.click()}
-            className={`flex w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-4 py-9 text-center transition ${
-              dragging ? "border-text bg-surface-2" : "border-border hover:border-muted hover:bg-surface-2"
-            }`}
+            data-dragging={dragging || undefined}
+            className="dropzone group relative flex w-full flex-col items-center justify-center gap-4 overflow-hidden rounded-2xl px-4 py-12 text-center"
           >
-            <span className="grid size-14 place-items-center rounded-2xl bg-text text-bg shadow-lg">
+            <span className="relative grid size-16 place-items-center rounded-2xl bg-gradient-to-b from-neutral-700 to-black text-white shadow-lux ring-1 ring-white/10 transition-transform duration-700 ease-out-expo group-hover:-translate-y-1 group-data-[dragging]:-translate-y-2 group-data-[dragging]:scale-110">
               <UploadIcon className="size-7" />
             </span>
-            <span>
-              <span className="block font-semibold">اختر ملف PDF</span>
-              <span className="mt-1 block text-sm text-muted">أو اسحبه هنا · حتى 20 ميجا</span>
+            <span className="relative">
+              <span className="block text-lg font-semibold">{dragging ? "أفلت الملف هنا" : "اختر ملف PDF"}</span>
+              <span className="mt-1 block text-sm text-faint">أو اسحبه هنا · حتى ٢٠ ميجا</span>
             </span>
           </button>
         )
@@ -186,12 +198,13 @@ export default function UploadForm() {
             value={pasted}
             onChange={(e) => setPasted(e.target.value)}
             placeholder="الصق نص المحاضرة هنا…"
+            aria-label="نص المحاضرة"
             dir="auto"
             rows={9}
             disabled={busy}
-            className="w-full resize-y rounded-2xl border border-border bg-surface-2 p-4 pb-8 leading-7 outline-none transition focus:border-text focus:bg-surface"
+            className="w-full resize-y rounded-2xl border border-border bg-surface-2 p-4 pb-9 leading-8 outline-none transition placeholder:text-faint focus:border-border-strong focus:bg-surface-3"
           />
-          <span className="pointer-events-none absolute bottom-3 left-4 text-xs text-muted">
+          <span className="pointer-events-none absolute bottom-3 left-4 text-xs tabular-nums text-faint">
             {chars.toLocaleString("ar-EG")} حرف
           </span>
         </div>
@@ -205,16 +218,12 @@ export default function UploadForm() {
       />
 
       {error && (
-        <p role="alert" className="rounded-xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm leading-6 text-danger">
+        <p role="alert" className="rounded-xl border border-border-strong bg-surface-2 px-4 py-3 text-sm leading-7">
           {error}
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={!canSubmit}
-        className="btn-primary h-12 w-full"
-      >
+      <button type="submit" disabled={!canSubmit} className="btn-primary h-13 w-full text-base">
         {busy ? (
           <>
             <Spinner /> {mode === "pdf" ? "نقرأ الملزمة…" : "نجهّز النص…"}

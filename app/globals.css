@@ -313,3 +313,53 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* منطقة الرفع: حد متحرك وضوء يشتد لما يُسحب ملف فوقها. */
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.dropzone {
+  background:
+    radial-gradient(60% 80% at 50% 0%, var(--spot), transparent 70%),
+    var(--surface-2);
+  transition: background 500ms;
+}
+
+.dropzone::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(from var(--angle), var(--border) 0deg, var(--border-strong) 60deg, var(--text) 90deg, var(--border-strong) 120deg, var(--border) 180deg, var(--border) 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  opacity: 0.55;
+  animation: spin-border 6s linear infinite;
+  transition: opacity 400ms;
+}
+
+.dropzone:hover::before {
+  opacity: 0.9;
+}
+
+.dropzone[data-dragging] {
+  background:
+    radial-gradient(80% 100% at 50% 30%, color-mix(in oklab, var(--text) 14%, transparent), transparent 75%),
+    var(--surface-3);
+}
+
+.dropzone[data-dragging]::before {
+  opacity: 1;
+  animation-duration: 1.4s;
+}
+
+@keyframes spin-border {
+  to {
+    --angle: 360deg;
+  }
+}
