@@ -2,6 +2,7 @@ import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import type { z } from "zod";
+import type { GenerateOptions } from "./ai";
 import { AppError } from "./errors";
 
 export const MODEL = "claude-sonnet-5-5";
@@ -14,16 +15,8 @@ function getClient(): Anthropic {
   return client;
 }
 
-type GenerateOptions<S extends z.ZodType> = {
-  schema: S;
-  system: string;
-  prompt: string;
-  effort?: "low" | "medium" | "high";
-  maxTokens?: number;
-};
-
 // طلب واحد يرجّع JSON مضمون الشكل حسب مخطط zod.
-export async function generate<S extends z.ZodType>({
+export async function generateWithClaude<S extends z.ZodType>({
   schema,
   system,
   prompt,
@@ -67,10 +60,4 @@ function toAppError(err: unknown): AppError {
   }
   console.error("generate failed", err);
   return new AppError("unknown");
-}
-
-export function languageInstruction(arabic: boolean): string {
-  return arabic
-    ? "اكتب كل المخرجات باللغة العربية الفصحى المبسطة، لأن الملزمة عربية. اترك المصطلحات العلمية الإنجليزية بين قوسين إذا وردت كذا في الملزمة."
-    : "The lecture is in English, so write every field in clear English. Do not translate into Arabic.";
 }

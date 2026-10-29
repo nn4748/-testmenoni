@@ -1,5 +1,5 @@
 import "server-only";
-import { generate, languageInstruction } from "./anthropic";
+import { generate, languageInstruction } from "./ai";
 import { chunkText, mapLimit } from "./chunk";
 import { AppError } from "./errors";
 import { QuizSchema, type QuizQuestion } from "./schemas";

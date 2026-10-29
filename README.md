@@ -11,7 +11,8 @@
 ## التقنيات
 
 - Next.js 16 (App Router) + TypeScript + Tailwind CSS 4
-- Anthropic SDK الرسمي، والموديل `claude-sonnet-5-5`
+- **Google Gemini** (`gemini-3.8-flash`) عليه طبقة مجانية، وهو الافتراضي
+- أو Anthropic SDK والموديل `claude-sonnet-5-5` إذا حطيت مفتاح Claude
 - structured outputs مع zod عشان الملخص والبطاقات والاختبار يرجعون JSON مضمون الشكل
 - unpdf لاستخراج نص الـ PDF
 
@@ -24,11 +25,13 @@ npm install
 cp .env.example .env.local
 ```
 
-افتح `.env.local` وحط مفتاحك من [console.anthropic.com](https://console.anthropic.com):
+افتح `.env.local` وحط مفتاح Gemini المجاني من [aistudio.google.com/apikey](https://aistudio.google.com/apikey):
 
 ```
-ANTHROPIC_API_KEY=sk-ant-...
+GEMINI_API_KEY=...
 ```
+
+إذا تبي Claude بدله، حط `ANTHROPIC_API_KEY` (مدفوع)، والتطبيق يستخدمه تلقائيًا.
 
 بعدها:
 
@@ -52,8 +55,8 @@ npm run dev
 2. ادخل [vercel.com/new](https://vercel.com/new) وسجّل دخول بحساب GitHub.
 3. اختر المستودع واضغط **Import**. Vercel يتعرف على Next.js لحاله، لا تغيّر إعدادات البناء.
 4. قبل ما تضغط Deploy، افتح **Environment Variables** وأضف:
-   - Name: `ANTHROPIC_API_KEY`
-   - Value: مفتاحك
+   - Name: `GEMINI_API_KEY`
+   - Value: مفتاحك المجاني من AI Studio
 5. اضغط **Deploy**. بعد دقيقة أو دقيقتين يعطيك رابط مثل `https://your-app.vercel.app`.
 
 كل ما ترفع commit جديد على `main`، Vercel ينشر التحديث تلقائيًا.
@@ -81,7 +84,8 @@ lib/
   storage.ts             الحفظ في localStorage
 ```
 
-- **المفتاح ما يوصل للمتصفح أبدًا:** كل استدعاءات Claude من Route Handlers على السيرفر، و`lib/anthropic.ts` محمي بـ `server-only`.
+- **المفتاح ما يوصل للمتصفح أبدًا:** كل استدعاءات الذكاء الاصطناعي من Route Handlers على السيرفر، و`lib/ai.ts` و`lib/gemini.ts` و`lib/anthropic.ts` محمية بـ `server-only`.
+- **الطبقة المجانية:** فيها حد لعدد الطلبات في الدقيقة، وGoogle تستخدم بياناتها لتحسين منتجاتها.
 - **الملفات الكبيرة:** Vercel ما يقبل طلب أكبر من ~4.5MB، فالـ PDF اللي حجمه 4MB أو أقل يتقرأ على السيرفر، والأكبر (لين 20MB) يتقرأ في المتصفح بنفس المكتبة، ويوصل للسيرفر النص بس.
 - **المحتوى الطويل:** إذا النص أطول من ~120 ألف حرف، يتقسم على حدود الفقرات، كل جزء يتعالج لحاله (3 بالتوازي)، وبعدين تندمج النتائج.
 - **الاختبار:** الخيارات تنخلط على السيرفر عشان مكان الجواب الصحيح ما يتكرر، وكل سؤال يتحقق إن له 4 خيارات وجواب صحيح واحد.
