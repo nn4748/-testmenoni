@@ -53,6 +53,11 @@ export function saveResult(result: QuizResult): boolean {
   return write(RESULTS_KEY, [result, ...listResults().filter((r) => r.id !== result.id)]);
 }
 
+export function deleteDoc(id: string): void {
+  write(DOCS_KEY, listDocs().filter((d) => d.id !== id));
+  write(RESULTS_KEY, listResults().filter((r) => r.docId !== id));
+}
+
 export function newId(): string {
   return crypto.randomUUID();
 }

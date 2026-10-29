@@ -11,7 +11,12 @@ export default function Header() {
           </span>
           ذاكرلي
         </Link>
-        <ThemeToggle />
+        <nav className="flex items-center gap-1">
+          <Link href="/library" className="rounded-full px-3 py-2 text-sm font-medium text-muted transition hover:bg-surface-2 hover:text-text">
+            ملفاتي
+          </Link>
+          <ThemeToggle />
+        </nav>
       </div>
     </header>
   );
