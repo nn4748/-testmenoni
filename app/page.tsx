@@ -1,5 +1,5 @@
 import { CardsIcon, LockIcon, QuizIcon, SparkIcon, SummaryIcon } from "@/components/Icons";
-import Hero3D from "@/components/Hero3D";
+import HeroStage from "@/components/hero/HeroStage";
 import UploadForm from "@/components/UploadForm";
 
 const FEATURES = [
@@ -31,7 +31,7 @@ export default function Home() {
         </p>
       </section>
 
-      <Hero3D />
+      <HeroStage className="mx-auto h-80 w-full max-w-md" />
 
       <UploadForm />
 
