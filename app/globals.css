@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg: #f7f7f4;
+  --surface: #ffffff;
+  --surface-2: #f0efe9;
+  --border: #e3e1d8;
+  --text: #1c1b18;
+  --muted: #6b685e;
+  --brand: #2f6f5e;
+  --brand-soft: #e2efe9;
+  --brand-ink: #ffffff;
+  --danger: #b4412f;
+  --danger-soft: #fbe9e5;
+}
+
+.dark {
+  --bg: #121412;
+  --surface: #1b1e1b;
+  --surface-2: #242824;
+  --border: #323732;
+  --text: #ecebe6;
+  --muted: #a3a197;
+  --brand: #6fbfa5;
+  --brand-soft: #1f332c;
+  --brand-ink: #0f1a16;
+  --danger: #f08c78;
+  --danger-soft: #3a2420;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-ink: var(--brand-ink);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --font-sans: var(--font-arabic), system-ui, sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  -webkit-tap-highlight-color: transparent;
+}
