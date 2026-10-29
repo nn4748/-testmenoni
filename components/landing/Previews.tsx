@@ -8,7 +8,9 @@ export function SummaryPreview() {
   return (
     <div className="surface overflow-hidden p-0" aria-label="مثال على ملخص">
       <div className="border-b border-border bg-surface-2/60 px-5 py-4">
-        <p className="eyebrow" dir="ltr">Summary · 4 sections</p>
+        <p className="eyebrow">
+          <span dir="ltr">Summary · 4 sections</span>
+        </p>
         <p className="mt-2 text-lg font-semibold">نموذج الدخل والإنفاق في الاقتصاد المغلق</p>
         <p className="mt-1 text-sm leading-7 text-muted">كيف يتحدد الدخل التوازني، وكيف تكبّر المضاعفات أثر الإنفاق الحكومي.</p>
       </div>
@@ -58,7 +60,7 @@ export function CardsPreview() {
         style={{ transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
       >
         <span className="absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-[1.25rem] bg-gradient-to-b from-neutral-800 to-black p-6 text-white shadow-lux ring-1 ring-white/10 backface-hidden">
-          <span className="eyebrow text-neutral-400" dir="ltr">Card 03 / 12</span>
+          <span className="eyebrow text-neutral-400"><span dir="ltr">Card 03 / 12</span></span>
           <span className="text-lg font-semibold leading-8">ما هو الميل الحدي للاستهلاك؟</span>
           <span className="text-xs text-neutral-400">اضغط للقلب</span>
         </span>

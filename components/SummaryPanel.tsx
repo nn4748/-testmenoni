@@ -23,8 +23,8 @@ export default function SummaryPanel({ doc }: { doc: StudyDoc }) {
     <div className="space-y-5" dir={dir}>
       <Reveal onMount>
         <section className="surface overflow-hidden p-6">
-          <p className="eyebrow" dir="ltr">
-            Overview
+          <p className="eyebrow">
+            <span dir="ltr">Overview</span>
           </p>
           <h2 className="mt-3 text-xl font-semibold leading-snug sm:text-2xl">{s.title}</h2>
           <p className="mt-3 text-[1.0625rem] leading-8 text-muted">{s.overview}</p>
@@ -57,8 +57,8 @@ export default function SummaryPanel({ doc }: { doc: StudyDoc }) {
       {s.keyTerms.length > 0 && (
         <Reveal onMount>
           <section className="surface p-5 sm:p-6">
-            <p className="eyebrow" dir="ltr">
-              Key terms
+            <p className="eyebrow">
+              <span dir="ltr">Key terms</span>
             </p>
             <h3 className="mt-2 text-lg font-semibold">{s.language === "ar" ? "مصطلحات مهمة" : "Terms to know"}</h3>
             <dl className="mt-4 grid gap-2 sm:grid-cols-2">

@@ -88,8 +88,8 @@ function Deck({ cards, onRegenerate }: { cards: Flashcard[]; onRegenerate: () =>
     return (
       <Reveal onMount>
         <div className="surface space-y-5 px-6 py-10 text-center">
-          <p className="eyebrow" dir="ltr">
-            Session complete
+          <p className="eyebrow">
+            <span dir="ltr">Session complete</span>
           </p>
           <p className="font-display text-7xl leading-none tabular-nums" dir="ltr">
             {knownCount}
@@ -147,9 +147,7 @@ function Deck({ cards, onRegenerate }: { cards: Flashcard[]; onRegenerate: () =>
         }
         back={
           <>
-            <span className="eyebrow" dir="ltr">
-              Answer
-            </span>
+            <span className="eyebrow"><span dir="ltr">Answer</span></span>
             <p dir="auto" className="text-lg leading-[1.8]">
               {card!.back}
             </p>

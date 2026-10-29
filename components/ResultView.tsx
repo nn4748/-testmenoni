@@ -34,13 +34,16 @@ export default function ResultView() {
   return (
     <div className="page space-y-5 pt-4">
       <header>
-        <Link href="/library" className="text-sm text-muted hover:text-text">
+        <Link href="/library" className="btn-ghost -ms-3 h-9">
           → ملفاتي
         </Link>
-        <h1 className="mt-2 text-xl font-bold leading-snug">
+        <p className="eyebrow mt-4">
+          <span dir="ltr">Result</span>
+        </p>
+        <h1 className="mt-2 text-2xl font-semibold leading-snug">
           <bdi>{result.docTitle}</bdi>
         </h1>
-        <p className="mt-1 text-sm text-muted">اختبار بتاريخ {formatDate(result.takenAt)}</p>
+        <p className="mt-1 text-sm text-faint">اختبار بتاريخ {formatDate(result.takenAt)}</p>
       </header>
       <QuizResults
         result={result}

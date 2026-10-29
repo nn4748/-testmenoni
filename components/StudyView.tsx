@@ -57,8 +57,8 @@ export default function StudyView() {
         animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
         transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
       >
-        <p className="eyebrow" dir="ltr">
-          Study set · {doc.source === "pdf" ? "PDF" : "Text"}
+        <p className="eyebrow">
+          <span dir="ltr">Study set · {doc.source === "pdf" ? "PDF" : "Text"}</span>
         </p>
         <h1 className="text-[1.75rem] font-semibold leading-[1.3] sm:text-[2.25rem]">
           <bdi>{doc.title}</bdi>

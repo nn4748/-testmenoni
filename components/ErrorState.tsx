@@ -8,8 +8,8 @@ export default function ErrorState({ message, onRetry }: { message: string; onRe
         </svg>
       </span>
       <div className="space-y-1">
-        <p className="eyebrow" dir="ltr">
-          Something went wrong
+        <p className="eyebrow">
+          <span dir="ltr">Something went wrong</span>
         </p>
         <p className="mx-auto max-w-sm leading-7">{message}</p>
       </div>

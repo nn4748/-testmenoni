@@ -21,8 +21,8 @@ export default function QuizResults({ result, actions }: { result: QuizResult; a
         animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
         transition={{ duration: 0.9, ease: EASE }}
       >
-        <p className="eyebrow" dir="ltr">
-          Your score
+        <p className="eyebrow">
+          <span dir="ltr">Your score</span>
         </p>
         <ScoreDial percent={percent} />
         <p className="text-lg font-semibold tabular-nums">
@@ -33,8 +33,8 @@ export default function QuizResults({ result, actions }: { result: QuizResult; a
       </motion.section>
 
       <section className="surface p-5 sm:p-6">
-        <p className="eyebrow" dir="ltr">
-          Weak points
+        <p className="eyebrow">
+          <span dir="ltr">Weak points</span>
         </p>
         <h3 className="mt-2 text-lg font-semibold">نقاط ضعفك</h3>
         {weak.length === 0 ? (
@@ -74,8 +74,8 @@ export default function QuizResults({ result, actions }: { result: QuizResult; a
 
       <section className="space-y-3">
         <div className="px-1">
-          <p className="eyebrow" dir="ltr">
-            Review
+          <p className="eyebrow">
+            <span dir="ltr">Review</span>
           </p>
           <h3 className="mt-2 text-lg font-semibold">مراجعة الأسئلة</h3>
         </div>

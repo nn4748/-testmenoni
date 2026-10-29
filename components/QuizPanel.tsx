@@ -107,8 +107,8 @@ export default function QuizPanel({ doc }: { doc: StudyDoc }) {
     <Reveal onMount>
       <div className="surface space-y-6 p-6">
         <div>
-          <p className="eyebrow" dir="ltr">
-            Quiz
+          <p className="eyebrow">
+            <span dir="ltr">Quiz</span>
           </p>
           <h2 className="mt-2 text-xl font-semibold">اختبر نفسك</h2>
           <p className="mt-2 text-sm leading-7 text-muted">

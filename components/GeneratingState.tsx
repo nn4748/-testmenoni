@@ -32,8 +32,8 @@ export default function GeneratingState({
   const body = (
     <div className="flex flex-col items-center text-center" aria-live="polite">
       <HeroStage className={variant === "overlay" ? "h-[46svh] w-full max-w-lg" : "h-64 w-full max-w-sm"} />
-      <p className="eyebrow mt-2" dir="ltr">
-        Distilling
+      <p className="eyebrow mt-2">
+        <span dir="ltr">Distilling</span>
       </p>
       <div className="relative mt-3 h-8 w-full overflow-hidden">
         <AnimatePresence mode="popLayout" initial={false}>

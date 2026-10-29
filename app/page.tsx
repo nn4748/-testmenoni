@@ -42,7 +42,9 @@ export default function Home() {
 
         <div className="relative -mt-4 space-y-6">
           <Reveal>
-            <p className="eyebrow" dir="ltr">Zakerly — AI study companion</p>
+            <p className="eyebrow">
+              <span dir="ltr">Zakerly — AI study companion</span>
+            </p>
           </Reveal>
           <h1 className="font-display text-[3.4rem] leading-[0.92] sm:text-display-lg">
             <MaskLines lines={["Study.", <em key="d" className="text-muted">Distilled.</em>]} delay={0.15} />

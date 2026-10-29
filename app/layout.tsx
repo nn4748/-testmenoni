@@ -44,9 +44,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Providers>
           <Header />
           <main className="flex-1 pb-20 pt-20">{children}</main>
-          <footer className="page flex items-center justify-between border-t border-border py-6 text-xs text-faint">
-            <span>ذاكرلي</span>
-            <span className="eyebrow">Study, distilled.</span>
+          <footer className="page space-y-4 border-t border-border py-8 text-xs text-faint">
+            <div className="flex items-center justify-between">
+              <span>ذاكرلي</span>
+              <span className="eyebrow">
+                <span dir="ltr">Study, distilled.</span>
+              </span>
+            </div>
+            <p className="text-center">
+              <span dir="ltr" className="font-display text-base tracking-normal text-muted">
+                Made by <em>Nourah Aleissa</em>
+              </span>
+            </p>
           </footer>
         </Providers>
         <div className="grain" aria-hidden />
