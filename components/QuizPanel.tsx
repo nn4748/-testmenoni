@@ -1,12 +1,15 @@
 "use client";
 
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { postJson } from "@/lib/api";
+import { scrollToTop } from "@/lib/scroll";
 import { DEFAULT_QUIZ_COUNT, QUIZ_COUNTS, type QuizQuestion } from "@/lib/schemas";
 import { newId, saveResult, updateDoc } from "@/lib/storage";
 import type { QuizResult, StudyDoc } from "@/lib/types";
 import ErrorState from "./ErrorState";
 import GeneratingState from "./GeneratingState";
+import { Reveal } from "./motion/Reveal";
 import QuizResults from "./QuizResults";
 
 const STEPS = ["نقرأ الملزمة…", "نختار المفاهيم المهمة…", "نكتب الأسئلة والخيارات…", "نجهّز الشرح لكل سؤال…"];
@@ -76,7 +79,7 @@ export default function QuizPanel({ doc }: { doc: StudyDoc }) {
           };
           saveResult(result);
           setStage({ name: "results", result });
-          window.scrollTo({ top: 0, behavior: "smooth" });
+          scrollToTop();
         }}
       />
     );
@@ -101,44 +104,56 @@ export default function QuizPanel({ doc }: { doc: StudyDoc }) {
   }
 
   return (
-    <div className="surface space-y-5 p-5">
-      <div>
-        <h2 className="text-lg font-bold">اختبر نفسك</h2>
-        <p className="mt-1 text-sm leading-6 text-muted">
-          أسئلة اختيار من متعدد من الملزمة، وبعد التسليم تشوف درجتك وشرح كل سؤال ونقاط ضعفك.
-        </p>
-      </div>
-
-      <fieldset>
-        <legend className="mb-2 text-sm font-medium">عدد الأسئلة</legend>
-        <div className="grid grid-cols-4 gap-2">
-          {QUIZ_COUNTS.map((n) => (
-            <button
-              key={n}
-              type="button"
-              aria-pressed={count === n}
-              onClick={() => setCount(n)}
-              className={`h-11 rounded-xl border text-sm font-semibold transition ${
-                count === n ? "border-text bg-text text-bg" : "border-border hover:bg-surface-2"
-              }`}
-            >
-              {n.toLocaleString("ar-EG")}
-            </button>
-          ))}
+    <Reveal onMount>
+      <div className="surface space-y-6 p-6">
+        <div>
+          <p className="eyebrow" dir="ltr">
+            Quiz
+          </p>
+          <h2 className="mt-2 text-xl font-semibold">اختبر نفسك</h2>
+          <p className="mt-2 text-sm leading-7 text-muted">
+            أسئلة اختيار من متعدد من الملزمة. بعد التسليم تشوف درجتك وشرح كل سؤال ونقاط ضعفك.
+          </p>
         </div>
-      </fieldset>
 
-      <div className="flex flex-col gap-2">
-        <button type="button" onClick={() => setStage({ name: "generating", count })} className="btn-primary h-12">
-          {doc.quiz ? "ولّد اختبار جديد" : "ولّد الاختبار"}
-        </button>
-        {doc.quiz && (
-          <button type="button" onClick={() => setStage({ name: "taking" })} className="btn-secondary h-12">
-            كمّل آخر اختبار ({doc.quiz.length.toLocaleString("ar-EG")} سؤال)
+        <fieldset>
+          <legend className="mb-3 text-sm text-faint">عدد الأسئلة</legend>
+          <div className="grid grid-cols-4 rounded-2xl bg-surface-2 p-1">
+            {QUIZ_COUNTS.map((n) => (
+              <button
+                key={n}
+                type="button"
+                aria-pressed={count === n}
+                onClick={() => setCount(n)}
+                className={`relative h-12 rounded-xl font-display text-xl tabular-nums transition-colors duration-300 ${
+                  count === n ? "text-bg" : "text-faint hover:text-muted"
+                }`}
+              >
+                {count === n && (
+                  <motion.span
+                    layoutId="quiz-count"
+                    className="absolute inset-0 rounded-xl bg-text shadow-[0_8px_24px_-12px_var(--text)]"
+                    transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                  />
+                )}
+                <span className="relative">{n}</span>
+              </button>
+            ))}
+          </div>
+        </fieldset>
+
+        <div className="flex flex-col gap-2">
+          <button type="button" onClick={() => setStage({ name: "generating", count })} className="btn-primary h-13 text-base">
+            {doc.quiz ? "ولّد اختبار جديد" : "ولّد الاختبار"}
           </button>
-        )}
+          {doc.quiz && (
+            <button type="button" onClick={() => setStage({ name: "taking" })} className="btn-secondary h-12">
+              كمّل آخر اختبار ({doc.quiz.length.toLocaleString("ar-EG")} سؤال)
+            </button>
+          )}
+        </div>
       </div>
-    </div>
+    </Reveal>
   );
 }
 
@@ -160,56 +175,70 @@ function QuizRunner({ questions, onSubmit }: { questions: QuizQuestion[]; onSubm
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-3 text-sm text-muted">
-        <span className="tabular-nums">
-          سؤال {(index + 1).toLocaleString("ar-EG")} من {questions.length.toLocaleString("ar-EG")}
+    <div className="space-y-5">
+      <div className="flex items-center gap-4 text-sm text-faint">
+        <span className="font-display text-xl tabular-nums text-text" dir="ltr">
+          {String(index + 1).padStart(2, "0")}
+          <span className="text-faint"> / {String(questions.length).padStart(2, "0")}</span>
         </span>
-        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-2">
-          <div className="h-full rounded-full bg-text transition-all" style={{ width: `${(answered / questions.length) * 100}%` }} />
+        <div className="h-px flex-1 bg-border">
+          <motion.div
+            className="h-px bg-text"
+            animate={{ width: `${(answered / questions.length) * 100}%` }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          />
         </div>
+        <span className="tabular-nums">{answered.toLocaleString("ar-EG")} مُجاب</span>
       </div>
 
-      <section className="surface p-5">
-        <span className="chip">{q.topic}</span>
-        <p dir="auto" className="mt-3 text-lg font-semibold leading-8">
-          {q.question}
-        </p>
-        <div role="radiogroup" className="mt-4 space-y-2">
-          {q.options.map((option, j) => {
-            const selected = answers[index] === j;
-            return (
-              <button
-                key={j}
-                type="button"
-                role="radio"
-                aria-checked={selected}
-                onClick={() => choose(j)}
-                className={`flex w-full items-start gap-3 rounded-xl border p-3.5 text-start leading-7 transition ${
-                  selected ? "border-text bg-text text-bg shadow-md" : "border-border hover:border-muted hover:bg-surface-2"
-                }`}
-              >
-                <span
-                  className={`grid size-7 shrink-0 place-items-center rounded-lg text-sm font-bold ${
-                    selected ? "bg-bg text-text" : "bg-surface-2 text-muted"
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.section
+          key={index}
+          className="surface p-5 sm:p-6"
+          initial={{ opacity: 0, x: -24, filter: "blur(6px)" }}
+          animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+          exit={{ opacity: 0, x: 24, filter: "blur(6px)" }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <span className="eyebrow">{q.topic}</span>
+          <p dir="auto" className="mt-3 text-lg font-semibold leading-8 sm:text-xl">
+            {q.question}
+          </p>
+          <div role="radiogroup" className="mt-5 space-y-2">
+            {q.options.map((option, j) => {
+              const selected = answers[index] === j;
+              const dimmed = answers[index] !== -1 && !selected;
+              return (
+                <motion.button
+                  key={j}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  onClick={() => choose(j)}
+                  whileTap={{ scale: 0.98, y: 1 }}
+                  className={`flex w-full items-start gap-3 rounded-2xl border p-4 text-start leading-7 transition-[background,color,border-color,box-shadow,opacity] duration-500 ${
+                    selected
+                      ? "border-text bg-text text-bg shadow-[0_0_40px_-12px_var(--text),inset_0_1px_0_rgb(255_255_255/0.3)]"
+                      : `border-border hover:border-border-strong hover:bg-surface-2 ${dimmed ? "opacity-55" : ""}`
                   }`}
                 >
-                  {LETTERS[j]}
-                </span>
-                <bdi className="pt-0.5">{option}</bdi>
-              </button>
-            );
-          })}
-        </div>
-      </section>
+                  <span
+                    className={`grid size-7 shrink-0 place-items-center rounded-lg text-sm font-bold transition-colors duration-500 ${
+                      selected ? "bg-bg text-text" : "bg-surface-2 text-faint"
+                    }`}
+                  >
+                    {LETTERS[j]}
+                  </span>
+                  <bdi className="pt-0.5">{option}</bdi>
+                </motion.button>
+              );
+            })}
+          </div>
+        </motion.section>
+      </AnimatePresence>
 
       <div className="grid grid-cols-2 gap-2">
-        <button
-          type="button"
-          onClick={() => setIndex((i) => i - 1)}
-          disabled={index === 0}
-          className="btn-secondary h-12 disabled:opacity-40"
-        >
+        <button type="button" onClick={() => setIndex((i) => i - 1)} disabled={index === 0} className="btn-secondary h-12">
           السابق
         </button>
         {last ? (
@@ -230,15 +259,16 @@ function QuizRunner({ questions, onSubmit }: { questions: QuizQuestion[]; onSubm
             type="button"
             onClick={() => setIndex(i)}
             aria-label={`سؤال ${i + 1}`}
-            className={`size-8 rounded-lg text-xs font-semibold transition ${
+            aria-current={i === index ? "step" : undefined}
+            className={`size-8 rounded-lg text-xs font-semibold tabular-nums transition ${
               i === index
                 ? "bg-text text-bg"
                 : answers[i] !== -1
-                  ? "bg-surface-2 text-text"
-                  : "border border-border text-muted"
+                  ? "border border-border-strong text-text"
+                  : "border border-border text-faint"
             }`}
           >
-            {(i + 1).toLocaleString("ar-EG")}
+            {i + 1}
           </button>
         ))}
       </div>
