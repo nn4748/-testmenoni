@@ -100,7 +100,7 @@ export default function UploadForm() {
   return (
     <form
       onSubmit={submit}
-      className="space-y-4 rounded-3xl border border-border bg-surface p-4 shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_24px_-12px_rgb(0_0_0/0.12)] sm:p-5"
+      className="surface animate-rise space-y-4 rounded-3xl p-4 [animation-delay:120ms] sm:p-5"
     >
       <div role="tablist" className="grid grid-cols-2 gap-1 rounded-xl bg-surface-2 p-1">
         {(
@@ -131,7 +131,7 @@ export default function UploadForm() {
       {mode === "pdf" ? (
         file ? (
           <div className="flex items-center gap-3 rounded-2xl border border-border bg-surface-2 p-3">
-            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand">
+            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-text text-bg">
               <FileIcon className="size-6" />
             </span>
             <div className="min-w-0 flex-1">
@@ -168,10 +168,10 @@ export default function UploadForm() {
             }}
             onClick={() => inputRef.current?.click()}
             className={`flex w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-4 py-9 text-center transition ${
-              dragging ? "border-brand bg-brand-soft" : "border-border hover:border-brand/60 hover:bg-surface-2"
+              dragging ? "border-text bg-surface-2" : "border-border hover:border-muted hover:bg-surface-2"
             }`}
           >
-            <span className="grid size-14 place-items-center rounded-2xl bg-brand-soft text-brand">
+            <span className="grid size-14 place-items-center rounded-2xl bg-text text-bg shadow-lg">
               <UploadIcon className="size-7" />
             </span>
             <span>
@@ -189,7 +189,7 @@ export default function UploadForm() {
             dir="auto"
             rows={9}
             disabled={busy}
-            className="w-full resize-y rounded-2xl border border-border bg-surface-2 p-4 pb-8 leading-7 outline-none transition focus:border-brand focus:bg-surface"
+            className="w-full resize-y rounded-2xl border border-border bg-surface-2 p-4 pb-8 leading-7 outline-none transition focus:border-text focus:bg-surface"
           />
           <span className="pointer-events-none absolute bottom-3 left-4 text-xs text-muted">
             {chars.toLocaleString("ar-EG")} حرف
@@ -213,7 +213,7 @@ export default function UploadForm() {
       <button
         type="submit"
         disabled={!canSubmit}
-        className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand font-semibold text-brand-ink shadow-sm transition hover:brightness-110 active:scale-[0.99] disabled:opacity-40 disabled:shadow-none"
+        className="btn-primary h-12 w-full"
       >
         {busy ? (
           <>

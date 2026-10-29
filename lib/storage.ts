@@ -1,6 +1,7 @@
-import type { StudyDoc } from "./types";
+import type { QuizResult, StudyDoc } from "./types";
 
 export const DOCS_KEY = "zakerli:docs";
+export const RESULTS_KEY = "zakerli:results";
 // localStorage ما يطلق حدث "storage" في نفس التبويب، فنطلق حدثنا الخاص.
 export const CHANGE_EVENT = "zakerli:change";
 
@@ -40,6 +41,16 @@ export function saveDoc(doc: StudyDoc): boolean {
 export function updateDoc(id: string, patch: Partial<StudyDoc>): boolean {
   const doc = getDoc(id);
   return doc ? saveDoc({ ...doc, ...patch }) : false;
+}
+
+export function listResults(docId?: string): QuizResult[] {
+  return read<QuizResult[]>(RESULTS_KEY, [])
+    .filter((r) => !docId || r.docId === docId)
+    .sort((a, b) => b.takenAt - a.takenAt);
+}
+
+export function saveResult(result: QuizResult): boolean {
+  return write(RESULTS_KEY, [result, ...listResults().filter((r) => r.id !== result.id)]);
 }
 
 export function newId(): string {

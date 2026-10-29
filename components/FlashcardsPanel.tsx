@@ -82,7 +82,7 @@ function Deck({ cards, onRegenerate }: { cards: Flashcard[]; onRegenerate: () =>
   if (done) {
     const missedList = [...missed];
     return (
-      <div className="space-y-4 rounded-2xl border border-border bg-surface p-6 text-center">
+      <div className="surface space-y-4 p-6 text-center">
         <p className="text-4xl" aria-hidden>
           {missedList.length === 0 ? "🎉" : "💪"}
         </p>
@@ -95,7 +95,7 @@ function Deck({ cards, onRegenerate }: { cards: Flashcard[]; onRegenerate: () =>
             <button
               type="button"
               onClick={() => restart(missedList)}
-              className="h-12 rounded-xl bg-brand font-semibold text-brand-ink"
+              className="btn-primary h-12"
             >
               راجع اللي ما عرفتها ({missedList.length.toLocaleString("ar-EG")})
             </button>
@@ -103,7 +103,7 @@ function Deck({ cards, onRegenerate }: { cards: Flashcard[]; onRegenerate: () =>
           <button
             type="button"
             onClick={() => restart(cards.map((_, i) => i))}
-            className="h-12 rounded-xl border border-border font-semibold hover:bg-surface-2"
+            className="btn-secondary h-12"
           >
             ابدأ من جديد
           </button>
@@ -145,14 +145,14 @@ function Deck({ cards, onRegenerate }: { cards: Flashcard[]; onRegenerate: () =>
           }`}
         >
           <Face>
-            <span className="rounded-full bg-surface-2 px-2.5 py-0.5 text-xs text-muted">{card!.topic}</span>
+            <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs opacity-80 dark:bg-black/10">{card!.topic}</span>
             <p dir="auto" className="text-xl font-semibold leading-relaxed">
               {card!.front}
             </p>
-            <span className="text-xs text-muted">اضغط على البطاقة لإظهار الجواب</span>
+            <span className="text-xs opacity-60">اضغط على البطاقة لإظهار الجواب</span>
           </Face>
           <Face back>
-            <span className="rounded-full bg-brand/15 px-2.5 py-0.5 text-xs text-brand">الجواب</span>
+            <span className="chip">الجواب</span>
             <p dir="auto" className="text-lg leading-relaxed">
               {card!.back}
             </p>
@@ -170,7 +170,7 @@ function Deck({ cards, onRegenerate }: { cards: Flashcard[]; onRegenerate: () =>
           >
             ما عرفتها
           </button>
-          <button type="button" onClick={() => answer(true)} className="h-12 rounded-xl bg-brand font-semibold text-brand-ink">
+          <button type="button" onClick={() => answer(true)} className="btn-primary h-12">
             عرفتها
           </button>
         </div>
@@ -180,11 +180,11 @@ function Deck({ cards, onRegenerate }: { cards: Flashcard[]; onRegenerate: () =>
             type="button"
             onClick={() => go(pos - 1)}
             disabled={pos === 0}
-            className="h-12 rounded-xl border border-border font-medium hover:bg-surface-2 disabled:opacity-40"
+            className="btn-secondary h-12 disabled:opacity-40"
           >
             السابقة
           </button>
-          <button type="button" onClick={() => go(pos + 1)} className="h-12 rounded-xl border border-border font-medium hover:bg-surface-2">
+          <button type="button" onClick={() => go(pos + 1)} className="btn-secondary h-12">
             التالية
           </button>
         </div>
@@ -207,7 +207,9 @@ function Face({ back = false, children }: { back?: boolean; children: React.Reac
   return (
     <div
       className={`col-start-1 row-start-1 flex flex-col items-center justify-center gap-4 rounded-3xl border p-6 text-center backface-hidden ${
-        back ? "rotate-y-180 border-brand/30 bg-brand-soft" : "border-border bg-surface shadow-sm"
+        back
+          ? "rotate-y-180 border-border bg-surface shadow-lux"
+          : "border-white/10 bg-gradient-to-b from-neutral-800 to-neutral-950 text-white shadow-[0_30px_60px_-24px_rgb(0_0_0/0.55),inset_0_1px_0_rgb(255_255_255/0.1)] dark:border-black/10 dark:from-neutral-100 dark:to-neutral-300 dark:text-neutral-950"
       }`}
     >
       {children}

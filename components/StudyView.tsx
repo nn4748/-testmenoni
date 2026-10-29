@@ -7,13 +7,14 @@ import { isArabic } from "@/lib/text";
 import { useDoc } from "@/lib/useDoc";
 import { CardsIcon, ChevronIcon, FileIcon, QuizIcon, SummaryIcon } from "./Icons";
 import FlashcardsPanel from "./FlashcardsPanel";
+import QuizPanel from "./QuizPanel";
 import Spinner from "./Spinner";
 import SummaryPanel from "./SummaryPanel";
 
 const TABS = [
-  { id: "summary", label: "الملخص", icon: SummaryIcon, soon: "ملخص منظم بعناوين ونقاط رئيسية من الملزمة." },
-  { id: "cards", label: "البطاقات", icon: CardsIcon, soon: "بطاقات سؤال وجواب تقلبها وتراجع فيها." },
-  { id: "quiz", label: "الاختبار", icon: QuizIcon, soon: "اختبار اختيار من متعدد مع تصحيح ونقاط ضعفك." },
+  { id: "summary", label: "الملخص", icon: SummaryIcon },
+  { id: "cards", label: "البطاقات", icon: CardsIcon },
+  { id: "quiz", label: "الاختبار", icon: QuizIcon },
 ] as const;
 
 type Tab = (typeof TABS)[number]["id"];
@@ -38,7 +39,7 @@ export default function StudyView() {
       <div className="space-y-4 py-16 text-center">
         <p className="text-lg font-semibold">ما لقينا هذا الملف</p>
         <p className="text-muted">يمكن انحذف من المتصفح. ارفعه مرة ثانية.</p>
-        <Link href="/" className="inline-block rounded-xl bg-brand px-5 py-3 font-semibold text-brand-ink">
+        <Link href="/" className="btn-primary px-5 py-3">
           ارفع ملف
         </Link>
       </div>
@@ -46,12 +47,11 @@ export default function StudyView() {
   }
 
   const words = doc.text.split(/\s+/).length;
-  const current = TABS.find((t) => t.id === tab)!;
 
   return (
     <div className="space-y-5 pt-2">
       <section className="flex items-start gap-3">
-        <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-brand-soft text-brand">
+        <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-text text-bg shadow-lg">
           <FileIcon className="size-6" />
         </span>
         <div className="min-w-0 space-y-2">
@@ -99,17 +99,13 @@ export default function StudyView() {
         </div>
       )}
 
-      {tab === "quiz" && (
-        <section className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border px-6 py-12 text-center">
-          <span className="grid size-12 place-items-center rounded-2xl bg-surface-2 text-muted">
-            <current.icon className="size-6" />
-          </span>
-          <p className="font-semibold">{current.label} قريبًا</p>
-          <p className="max-w-xs text-sm leading-6 text-muted">{current.soon}</p>
-        </section>
+      {opened.has("quiz") && (
+        <div hidden={tab !== "quiz"}>
+          <QuizPanel doc={doc} />
+        </div>
       )}
 
-      <details className="group rounded-2xl border border-border bg-surface">
+      <details className="surface group">
         <summary className="flex cursor-pointer list-none items-center justify-between p-4 font-medium">
           النص المستخرج من الملزمة
           <ChevronIcon className="size-4 text-muted transition group-open:rotate-180" />

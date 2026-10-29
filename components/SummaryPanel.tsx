@@ -20,15 +20,15 @@ export default function SummaryPanel({ doc }: { doc: StudyDoc }) {
 
   return (
     <div className="space-y-4" dir={dir}>
-      <section className="rounded-2xl border border-brand/25 bg-brand-soft p-5">
+      <section className="rounded-[1.25rem] bg-gradient-to-b from-neutral-800 to-neutral-950 p-5 text-white shadow-[0_24px_48px_-24px_rgb(0_0_0/0.6),inset_0_1px_0_rgb(255_255_255/0.1)] dark:from-neutral-100 dark:to-neutral-300 dark:text-neutral-950">
         <h2 className="text-lg font-bold leading-snug">{s.title}</h2>
-        <p className="mt-2 leading-7">{s.overview}</p>
+        <p className="mt-2 leading-7 opacity-80">{s.overview}</p>
       </section>
 
       {s.sections.map((section, i) => (
-        <section key={i} className="rounded-2xl border border-border bg-surface p-5">
+        <section key={i} className="surface p-5">
           <h3 className="flex items-start gap-2.5 font-bold leading-snug">
-            <span className="grid size-6 shrink-0 place-items-center rounded-md bg-surface-2 text-xs text-muted">
+            <span className="grid size-6 shrink-0 place-items-center rounded-md bg-text text-xs text-bg">
               {i + 1}
             </span>
             {section.heading}
@@ -36,7 +36,7 @@ export default function SummaryPanel({ doc }: { doc: StudyDoc }) {
           <ul className="mt-3 space-y-2.5">
             {section.points.map((point, j) => (
               <li key={j} className="flex gap-2.5 leading-7">
-                <span className="mt-[0.7rem] size-1.5 shrink-0 rounded-full bg-brand" aria-hidden />
+                <span className="mt-[0.7rem] size-1.5 shrink-0 rounded-full bg-muted" aria-hidden />
                 <span>{point}</span>
               </li>
             ))}
@@ -45,12 +45,12 @@ export default function SummaryPanel({ doc }: { doc: StudyDoc }) {
       ))}
 
       {s.keyTerms.length > 0 && (
-        <section className="rounded-2xl border border-border bg-surface p-5">
+        <section className="surface p-5">
           <h3 className="font-bold">{s.language === "ar" ? "مصطلحات مهمة" : "Key terms"}</h3>
           <dl className="mt-3 divide-y divide-border">
             {s.keyTerms.map((t, i) => (
               <div key={i} className="py-3 first:pt-0 last:pb-0">
-                <dt className="font-semibold text-brand">{t.term}</dt>
+                <dt className="font-semibold">{t.term}</dt>
                 <dd className="mt-0.5 text-sm leading-6 text-muted">{t.definition}</dd>
               </div>
             ))}

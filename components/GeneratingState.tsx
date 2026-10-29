@@ -14,8 +14,8 @@ export default function GeneratingState({ steps }: { steps: string[] }) {
 
   return (
     <div className="space-y-4" aria-live="polite">
-      <div className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-4">
-        <span className="text-brand">
+      <div className="surface flex items-center gap-3 p-4">
+        <span className="text-text">
           <Spinner />
         </span>
         <div>
@@ -25,7 +25,7 @@ export default function GeneratingState({ steps }: { steps: string[] }) {
       </div>
       <div className="space-y-3" aria-hidden>
         {[0, 1, 2].map((i) => (
-          <div key={i} className="animate-pulse space-y-3 rounded-2xl border border-border bg-surface p-5">
+          <div key={i} className="surface animate-pulse space-y-3 p-5">
             <div className="h-4 w-1/3 rounded bg-surface-2" />
             <div className="h-3 w-full rounded bg-surface-2" />
             <div className="h-3 w-5/6 rounded bg-surface-2" />

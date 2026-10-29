@@ -31,6 +31,28 @@ export const FlashcardDeckSchema = z.object({
 
 export type Flashcard = z.infer<typeof FlashcardSchema>;
 
+export const QuizQuestionSchema = z.object({
+  question: z.string(),
+  options: z.array(z.string()).describe("أربعة خيارات بالضبط"),
+  correctIndex: z.number().int().describe("رقم الخيار الصحيح من 0 إلى 3"),
+  explanation: z.string().describe("شرح مختصر ليش هذا الخيار هو الصحيح"),
+  topic: z.string().describe("الموضوع أو القسم اللي يختبره السؤال، بكلمتين إلى أربع"),
+});
+
+export const QuizSchema = z.object({
+  questions: z.array(QuizQuestionSchema),
+});
+
+export type QuizQuestion = z.infer<typeof QuizQuestionSchema>;
+
+export const QUIZ_COUNTS = [5, 10, 15, 20] as const;
+export const DEFAULT_QUIZ_COUNT = 10;
+
 export const GenerateRequestSchema = z.object({
   text: z.string().min(1),
+});
+
+export const QuizRequestSchema = z.object({
+  text: z.string().min(1),
+  count: z.number().int().min(1).max(30).default(DEFAULT_QUIZ_COUNT),
 });

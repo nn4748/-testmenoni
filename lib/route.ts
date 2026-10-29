@@ -1,4 +1,5 @@
 import "server-only";
+import type { z } from "zod";
 import { AppError, errorResponse } from "./errors";
 import { GenerateRequestSchema } from "./schemas";
 import { MAX_TEXT_CHARS, assertUsableText } from "./text";
@@ -16,14 +17,21 @@ const STATUS: Partial<Record<AppError["code"], number>> = {
   text_too_long: 413,
 };
 
-// يقرأ نص الملزمة من جسم الطلب ويتأكد إنه صالح.
-export async function readText(request: Request): Promise<string> {
-  const parsed = GenerateRequestSchema.safeParse(await request.json().catch(() => null));
+// يقرأ جسم الطلب ويتأكد إن نص الملزمة صالح.
+export async function readBody<S extends z.ZodType<{ text: string }>>(
+  request: Request,
+  schema: S,
+): Promise<z.infer<S>> {
+  const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) throw new AppError("bad_request");
   const { text } = parsed.data;
   assertUsableText(text);
   if (text.length > MAX_TEXT_CHARS) throw new AppError("text_too_long");
-  return text;
+  return parsed.data;
+}
+
+export async function readText(request: Request): Promise<string> {
+  return (await readBody(request, GenerateRequestSchema)).text;
 }
 
 export function handleError(err: unknown) {
