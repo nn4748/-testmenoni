@@ -6,6 +6,7 @@ import { useState } from "react";
 import { isArabic } from "@/lib/text";
 import { useDoc } from "@/lib/useDoc";
 import { CardsIcon, ChevronIcon, FileIcon, QuizIcon, SummaryIcon } from "./Icons";
+import FlashcardsPanel from "./FlashcardsPanel";
 import Spinner from "./Spinner";
 import SummaryPanel from "./SummaryPanel";
 
@@ -21,6 +22,8 @@ export default function StudyView() {
   const { id } = useParams<{ id: string }>();
   const doc = useDoc(id);
   const [tab, setTab] = useState<Tab>("summary");
+  // التبويب ما يبدأ التوليد إلا أول ما يُفتح، وبعدها يبقى مركّب.
+  const [opened, setOpened] = useState<Set<Tab>>(() => new Set(["summary"]));
 
   if (doc === undefined) {
     return (
@@ -70,7 +73,10 @@ export default function StudyView() {
               key={tabId}
               role="tab"
               aria-selected={tab === tabId}
-              onClick={() => setTab(tabId)}
+              onClick={() => {
+                setTab(tabId);
+                setOpened((o) => new Set(o).add(tabId));
+              }}
               className={`flex h-10 items-center justify-center gap-1.5 rounded-lg text-sm font-medium transition ${
                 tab === tabId ? "bg-surface text-text shadow-sm" : "text-muted hover:text-text"
               }`}
@@ -87,7 +93,13 @@ export default function StudyView() {
         <SummaryPanel doc={doc} />
       </div>
 
-      {tab !== "summary" && (
+      {opened.has("cards") && (
+        <div hidden={tab !== "cards"}>
+          <FlashcardsPanel doc={doc} />
+        </div>
+      )}
+
+      {tab === "quiz" && (
         <section className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border px-6 py-12 text-center">
           <span className="grid size-12 place-items-center rounded-2xl bg-surface-2 text-muted">
             <current.icon className="size-6" />

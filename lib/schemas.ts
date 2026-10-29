@@ -19,6 +19,18 @@ export const SummarySchema = z.object({
 
 export type Summary = z.infer<typeof SummarySchema>;
 
+export const FlashcardSchema = z.object({
+  front: z.string().describe("سؤال قصير أو مصطلح في وجه البطاقة"),
+  back: z.string().describe("جواب مختصر ودقيق في خلف البطاقة"),
+  topic: z.string().describe("الموضوع أو القسم اللي تنتمي له البطاقة، بكلمتين إلى أربع"),
+});
+
+export const FlashcardDeckSchema = z.object({
+  cards: z.array(FlashcardSchema),
+});
+
+export type Flashcard = z.infer<typeof FlashcardSchema>;
+
 export const GenerateRequestSchema = z.object({
   text: z.string().min(1),
 });

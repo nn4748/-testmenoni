@@ -1,54 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { postJson } from "@/lib/api";
 import type { Summary } from "@/lib/schemas";
-import { updateDoc } from "@/lib/storage";
 import type { StudyDoc } from "@/lib/types";
+import { useGeneration } from "@/lib/useGeneration";
 import ErrorState from "./ErrorState";
 import GeneratingState from "./GeneratingState";
 
 const STEPS = ["نقرأ الملزمة…", "نحدد الأفكار الرئيسية…", "نرتّب الأقسام…", "نكتب الملخص…"];
 
+const pickSummary = (summary: Summary) => summary;
+
 export default function SummaryPanel({ doc }: { doc: StudyDoc }) {
-  const [error, setError] = useState<string | null>(null);
-  const [attempt, setAttempt] = useState(0);
-  const [regenerating, setRegenerating] = useState(false);
-  const needsSummary = !doc.summary || regenerating;
+  const { data: s, error, retry, regenerate } = useGeneration(doc, "summary", "/api/summary", pickSummary);
 
-  useEffect(() => {
-    if (!needsSummary || error) return;
-    const controller = new AbortController();
-    postJson<Summary>("/api/summary", { text: doc.text }, controller.signal)
-      .then((summary) => {
-        if (!updateDoc(doc.id, { summary })) {
-          setError("ما قدرنا نحفظ الملخص لأن مساحة المتصفح ممتلئة.");
-          return;
-        }
-        setRegenerating(false);
-      })
-      .catch((err: unknown) => {
-        if (controller.signal.aborted) return;
-        setError(err instanceof Error ? err.message : String(err));
-      });
-    return () => controller.abort();
-  }, [doc.id, doc.text, needsSummary, error, attempt]);
+  if (error) return <ErrorState message={error} onRetry={retry} />;
+  if (!s) return <GeneratingState steps={STEPS} />;
 
-  if (error) {
-    return (
-      <ErrorState
-        message={error}
-        onRetry={() => {
-          setError(null);
-          setAttempt((a) => a + 1);
-        }}
-      />
-    );
-  }
-
-  if (needsSummary || !doc.summary) return <GeneratingState steps={STEPS} />;
-
-  const s = doc.summary;
   const dir = s.language === "ar" ? "rtl" : "ltr";
 
   return (
@@ -94,7 +61,7 @@ export default function SummaryPanel({ doc }: { doc: StudyDoc }) {
       <div dir="rtl" className="flex justify-center pt-1">
         <button
           type="button"
-          onClick={() => setRegenerating(true)}
+          onClick={regenerate}
           className="h-10 rounded-xl px-4 text-sm font-medium text-muted transition hover:bg-surface-2 hover:text-text"
         >
           ولّد ملخص جديد
