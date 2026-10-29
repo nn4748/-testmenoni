@@ -5,12 +5,13 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { isArabic } from "@/lib/text";
 import { useDoc } from "@/lib/useDoc";
+import { CardsIcon, ChevronIcon, FileIcon, QuizIcon, SummaryIcon } from "./Icons";
 import Spinner from "./Spinner";
 
 const TABS = [
-  { id: "summary", label: "الملخص" },
-  { id: "cards", label: "البطاقات" },
-  { id: "quiz", label: "الاختبار" },
+  { id: "summary", label: "الملخص", icon: SummaryIcon, soon: "ملخص منظم بعناوين ونقاط رئيسية من الملزمة." },
+  { id: "cards", label: "البطاقات", icon: CardsIcon, soon: "بطاقات سؤال وجواب تقلبها وتراجع فيها." },
+  { id: "quiz", label: "الاختبار", icon: QuizIcon, soon: "اختبار اختيار من متعدد مع تصحيح ونقاط ضعفك." },
 ] as const;
 
 type Tab = (typeof TABS)[number]["id"];
@@ -41,41 +42,69 @@ export default function StudyView() {
   }
 
   const words = doc.text.split(/\s+/).length;
+  const current = TABS.find((t) => t.id === tab)!;
 
   return (
-    <div className="space-y-5">
-      <section className="space-y-1">
-        <h1 className="text-xl font-bold leading-snug" dir="auto">
-          {doc.title}
-        </h1>
-        <p className="text-sm text-muted">
-          {doc.pages ? `${doc.pages} صفحة · ` : ""}
-          {words.toLocaleString("ar")} كلمة · {isArabic(doc.text) ? "عربي" : "إنجليزي"}
-        </p>
+    <div className="space-y-5 pt-2">
+      <section className="flex items-start gap-3">
+        <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-brand-soft text-brand">
+          <FileIcon className="size-6" />
+        </span>
+        <div className="min-w-0 space-y-2">
+          <h1 className="text-xl font-bold leading-snug">
+            <bdi>{doc.title}</bdi>
+          </h1>
+          <div className="flex flex-wrap gap-1.5 text-xs text-muted">
+            {doc.pages ? <Badge>{doc.pages.toLocaleString("ar-EG")} صفحة</Badge> : null}
+            <Badge>{words.toLocaleString("ar-EG")} كلمة</Badge>
+            <Badge>{isArabic(doc.text) ? "عربي" : "English"}</Badge>
+          </div>
+        </div>
       </section>
 
-      <div role="tablist" className="grid grid-cols-3 gap-1 rounded-xl bg-surface-2 p-1">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            role="tab"
-            aria-selected={tab === t.id}
-            onClick={() => setTab(t.id)}
-            className={`h-10 rounded-lg text-sm font-medium transition ${
-              tab === t.id ? "bg-surface shadow-sm" : "text-muted"
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
+      <div role="tablist" className="sticky top-14 z-[5] -mx-4 bg-bg/90 px-4 py-2 backdrop-blur">
+        <div className="grid grid-cols-3 gap-1 rounded-xl bg-surface-2 p-1">
+          {TABS.map(({ id: tabId, label, icon: Icon }) => (
+            <button
+              key={tabId}
+              role="tab"
+              aria-selected={tab === tabId}
+              onClick={() => setTab(tabId)}
+              className={`flex h-10 items-center justify-center gap-1.5 rounded-lg text-sm font-medium transition ${
+                tab === tabId ? "bg-surface text-text shadow-sm" : "text-muted hover:text-text"
+              }`}
+            >
+              <Icon className="size-4" />
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <section className="rounded-2xl border border-border bg-surface p-5">
-        <p className="mb-3 text-sm text-muted">النص المستخرج من الملزمة:</p>
-        <p dir="auto" className="max-h-96 overflow-y-auto whitespace-pre-line text-sm leading-7">
+      <section className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border px-6 py-12 text-center">
+        <span className="grid size-12 place-items-center rounded-2xl bg-surface-2 text-muted">
+          <current.icon className="size-6" />
+        </span>
+        <p className="font-semibold">{current.label} قريبًا</p>
+        <p className="max-w-xs text-sm leading-6 text-muted">{current.soon}</p>
+      </section>
+
+      <details className="group rounded-2xl border border-border bg-surface">
+        <summary className="flex cursor-pointer list-none items-center justify-between p-4 font-medium">
+          النص المستخرج من الملزمة
+          <ChevronIcon className="size-4 text-muted transition group-open:rotate-180" />
+        </summary>
+        <p
+          dir="auto"
+          className="max-h-96 overflow-y-auto whitespace-pre-line border-t border-border p-4 text-sm leading-7 text-muted"
+        >
           {doc.text}
         </p>
-      </section>
+      </details>
     </div>
   );
+}
+
+function Badge({ children }: { children: React.ReactNode }) {
+  return <span className="rounded-full border border-border bg-surface px-2.5 py-0.5">{children}</span>;
 }

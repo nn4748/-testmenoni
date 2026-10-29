@@ -13,6 +13,7 @@ import {
   titleFromText,
 } from "@/lib/text";
 import type { ApiError, StudyDoc } from "@/lib/types";
+import { CloseIcon, FileIcon, UploadIcon } from "./Icons";
 import Spinner from "./Spinner";
 
 type Mode = "pdf" | "text";
@@ -94,9 +95,13 @@ export default function UploadForm() {
   }
 
   const canSubmit = !busy && (mode === "pdf" ? !!file : pasted.trim().length > 0);
+  const chars = pasted.trim().length;
 
   return (
-    <form onSubmit={submit} className="space-y-4">
+    <form
+      onSubmit={submit}
+      className="space-y-4 rounded-3xl border border-border bg-surface p-4 shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_24px_-12px_rgb(0_0_0/0.12)] sm:p-5"
+    >
       <div role="tablist" className="grid grid-cols-2 gap-1 rounded-xl bg-surface-2 p-1">
         {(
           [
@@ -109,12 +114,13 @@ export default function UploadForm() {
             type="button"
             role="tab"
             aria-selected={mode === value}
+            disabled={busy}
             onClick={() => {
               setMode(value);
               setError(null);
             }}
             className={`h-10 rounded-lg text-sm font-medium transition ${
-              mode === value ? "bg-surface shadow-sm" : "text-muted"
+              mode === value ? "bg-surface text-text shadow-sm" : "text-muted hover:text-text"
             }`}
           >
             {label}
@@ -123,60 +129,83 @@ export default function UploadForm() {
       </div>
 
       {mode === "pdf" ? (
-        <div
-          onDragOver={(e) => {
-            e.preventDefault();
-            setDragging(true);
-          }}
-          onDragLeave={() => setDragging(false)}
-          onDrop={(e) => {
-            e.preventDefault();
-            setDragging(false);
-            pickFile(e.dataTransfer.files[0]);
-          }}
-          onClick={() => inputRef.current?.click()}
-          className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-4 py-10 text-center transition ${
-            dragging ? "border-brand bg-brand-soft" : "border-border bg-surface"
-          }`}
-        >
-          <svg className="size-10 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
-            <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z" />
-            <path d="M14 3v5h5M12 18v-6M9 15l3-3 3 3" />
-          </svg>
-          {file ? (
-            <div>
-              <p className="font-medium break-all">{file.name}</p>
-              <p className="text-sm text-muted">
-                {(file.size / 1024 / 1024).toFixed(1)} ميجا · اضغط لتغيير الملف
+        file ? (
+          <div className="flex items-center gap-3 rounded-2xl border border-border bg-surface-2 p-3">
+            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand">
+              <FileIcon className="size-6" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-medium" dir="auto">
+                {file.name}
               </p>
+              <p className="text-xs text-muted">{(file.size / 1024 / 1024).toFixed(1)} ميجا · PDF</p>
             </div>
-          ) : (
-            <div>
-              <p className="font-medium">اضغط لاختيار ملف PDF</p>
-              <p className="text-sm text-muted">أو اسحبه هنا · الحد الأقصى 20 ميجا</p>
-            </div>
-          )}
-          <input
-            ref={inputRef}
-            type="file"
-            accept="application/pdf,.pdf"
-            className="hidden"
-            onChange={(e) => pickFile(e.target.files?.[0])}
-          />
-        </div>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => {
+                setFile(null);
+                if (inputRef.current) inputRef.current.value = "";
+              }}
+              aria-label="إزالة الملف"
+              className="grid size-9 place-items-center rounded-full text-muted hover:bg-surface hover:text-text"
+            >
+              <CloseIcon />
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragging(true);
+            }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setDragging(false);
+              pickFile(e.dataTransfer.files[0]);
+            }}
+            onClick={() => inputRef.current?.click()}
+            className={`flex w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-4 py-9 text-center transition ${
+              dragging ? "border-brand bg-brand-soft" : "border-border hover:border-brand/60 hover:bg-surface-2"
+            }`}
+          >
+            <span className="grid size-14 place-items-center rounded-2xl bg-brand-soft text-brand">
+              <UploadIcon className="size-7" />
+            </span>
+            <span>
+              <span className="block font-semibold">اختر ملف PDF</span>
+              <span className="mt-1 block text-sm text-muted">أو اسحبه هنا · حتى 20 ميجا</span>
+            </span>
+          </button>
+        )
       ) : (
-        <textarea
-          value={pasted}
-          onChange={(e) => setPasted(e.target.value)}
-          placeholder="الصق نص المحاضرة هنا…"
-          dir="auto"
-          rows={10}
-          className="w-full resize-y rounded-2xl border border-border bg-surface p-4 leading-7 outline-none focus:border-brand"
-        />
+        <div className="relative">
+          <textarea
+            value={pasted}
+            onChange={(e) => setPasted(e.target.value)}
+            placeholder="الصق نص المحاضرة هنا…"
+            dir="auto"
+            rows={9}
+            disabled={busy}
+            className="w-full resize-y rounded-2xl border border-border bg-surface-2 p-4 pb-8 leading-7 outline-none transition focus:border-brand focus:bg-surface"
+          />
+          <span className="pointer-events-none absolute bottom-3 left-4 text-xs text-muted">
+            {chars.toLocaleString("ar-EG")} حرف
+          </span>
+        </div>
       )}
+      <input
+        ref={inputRef}
+        type="file"
+        accept="application/pdf,.pdf"
+        className="hidden"
+        onChange={(e) => pickFile(e.target.files?.[0])}
+      />
 
       {error && (
-        <p role="alert" className="rounded-xl bg-danger-soft px-4 py-3 text-sm text-danger">
+        <p role="alert" className="rounded-xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm leading-6 text-danger">
           {error}
         </p>
       )}
@@ -184,14 +213,14 @@ export default function UploadForm() {
       <button
         type="submit"
         disabled={!canSubmit}
-        className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand font-semibold text-brand-ink transition disabled:opacity-40"
+        className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand font-semibold text-brand-ink shadow-sm transition hover:brightness-110 active:scale-[0.99] disabled:opacity-40 disabled:shadow-none"
       >
         {busy ? (
           <>
-            <Spinner /> نقرأ الملزمة…
+            <Spinner /> {mode === "pdf" ? "نقرأ الملزمة…" : "نجهّز النص…"}
           </>
         ) : (
-          "ابدأ"
+          "ابدأ المذاكرة"
         )}
       </button>
     </form>
