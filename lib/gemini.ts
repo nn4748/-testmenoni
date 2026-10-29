@@ -4,11 +4,12 @@ import { z } from "zod";
 import { AppError } from "./errors";
 import type { GenerateOptions } from "./ai";
 
-// موديلات عليها طبقة مجانية في Google AI Studio، بالترتيب. إذا واحد عليه ضغط ننتقل للي بعده.
-export const GEMINI_MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-2.5-flash", "gemini-3.5-flash-lite"];
+// موديلات عليها طبقة مجانية في Google AI Studio، بالترتيب. إذا واحد عليه ضغط أو تأخر ننتقل للي بعده.
+// 3.8-flash آخر واحد لأنه عليه ضغط كبير في الطبقة المجانية.
+export const GEMINI_MODELS = ["gemini-3.6-flash", "gemini-2.5-flash", "gemini-3.5-flash-lite", "gemini-3.8-flash"];
 
 // كل محاولة لها حد، عشان مجموع المحاولات ما يتعدى حد Vercel (300 ثانية).
-const ATTEMPT_TIMEOUT_MS = 70_000;
+const ATTEMPT_TIMEOUT_MS = 40_000;
 
 let client: GoogleGenAI | null = null;
 
@@ -82,9 +83,13 @@ async function withFallback<T>(request: (model: string) => Promise<T>): Promise<
   for (const model of GEMINI_MODELS) {
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
-        return await request(model);
+        const started = Date.now();
+        const result = await request(model);
+        console.info(`gemini ok ${model} ${Date.now() - started}ms`);
+        return result;
       } catch (err) {
         lastError = err;
+        console.warn(`gemini ${model} failed`, err instanceof ApiError ? err.status : (err as Error).name);
         const status = err instanceof ApiError ? err.status : 0;
         if (isTimeout(err)) break;
         if (status === 503 && attempt === 0) {
