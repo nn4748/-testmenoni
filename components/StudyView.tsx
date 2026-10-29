@@ -7,6 +7,7 @@ import { isArabic } from "@/lib/text";
 import { useDoc } from "@/lib/useDoc";
 import { CardsIcon, ChevronIcon, FileIcon, QuizIcon, SummaryIcon } from "./Icons";
 import Spinner from "./Spinner";
+import SummaryPanel from "./SummaryPanel";
 
 const TABS = [
   { id: "summary", label: "الملخص", icon: SummaryIcon, soon: "ملخص منظم بعناوين ونقاط رئيسية من الملزمة." },
@@ -81,13 +82,20 @@ export default function StudyView() {
         </div>
       </div>
 
-      <section className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border px-6 py-12 text-center">
-        <span className="grid size-12 place-items-center rounded-2xl bg-surface-2 text-muted">
-          <current.icon className="size-6" />
-        </span>
-        <p className="font-semibold">{current.label} قريبًا</p>
-        <p className="max-w-xs text-sm leading-6 text-muted">{current.soon}</p>
-      </section>
+      {/* نخلي الملخص مركّب حتى لو التبويب مخفي، عشان التوليد ما ينقطع لو تنقّل الطالب. */}
+      <div hidden={tab !== "summary"}>
+        <SummaryPanel doc={doc} />
+      </div>
+
+      {tab !== "summary" && (
+        <section className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border px-6 py-12 text-center">
+          <span className="grid size-12 place-items-center rounded-2xl bg-surface-2 text-muted">
+            <current.icon className="size-6" />
+          </span>
+          <p className="font-semibold">{current.label} قريبًا</p>
+          <p className="max-w-xs text-sm leading-6 text-muted">{current.soon}</p>
+        </section>
+      )}
 
       <details className="group rounded-2xl border border-border bg-surface">
         <summary className="flex cursor-pointer list-none items-center justify-between p-4 font-medium">

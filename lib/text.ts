@@ -4,6 +4,7 @@ export const MAX_PDF_BYTES = 20 * 1024 * 1024;
 // Vercel يرفض أي طلب جسمه أكبر من ~4.5MB، فالملفات الأكبر نقرأها في المتصفح.
 export const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
 export const MIN_TEXT_CHARS = 200;
+export const MAX_TEXT_CHARS = 600_000;
 
 export function cleanText(raw: string): string {
   return raw

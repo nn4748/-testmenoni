@@ -1,6 +1,8 @@
 import type { StudyDoc } from "./types";
 
 export const DOCS_KEY = "zakerli:docs";
+// localStorage ما يطلق حدث "storage" في نفس التبويب، فنطلق حدثنا الخاص.
+export const CHANGE_EVENT = "zakerli:change";
 
 function read<T>(key: string, fallback: T): T {
   try {
@@ -14,6 +16,7 @@ function read<T>(key: string, fallback: T): T {
 function write(key: string, value: unknown): boolean {
   try {
     localStorage.setItem(key, JSON.stringify(value));
+    window.dispatchEvent(new Event(CHANGE_EVENT));
     return true;
   } catch {
     // غالبًا امتلأت مساحة المتصفح.
@@ -32,6 +35,11 @@ export function getDoc(id: string): StudyDoc | undefined {
 export function saveDoc(doc: StudyDoc): boolean {
   const others = listDocs().filter((d) => d.id !== doc.id);
   return write(DOCS_KEY, [doc, ...others]);
+}
+
+export function updateDoc(id: string, patch: Partial<StudyDoc>): boolean {
+  const doc = getDoc(id);
+  return doc ? saveDoc({ ...doc, ...patch }) : false;
 }
 
 export function newId(): string {

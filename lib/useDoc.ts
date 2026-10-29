@@ -1,12 +1,16 @@
 "use client";
 
 import { useMemo, useSyncExternalStore } from "react";
-import { DOCS_KEY } from "./storage";
+import { CHANGE_EVENT, DOCS_KEY } from "./storage";
 import type { StudyDoc } from "./types";
 
 function subscribe(onChange: () => void) {
   window.addEventListener("storage", onChange);
-  return () => window.removeEventListener("storage", onChange);
+  window.addEventListener(CHANGE_EVENT, onChange);
+  return () => {
+    window.removeEventListener("storage", onChange);
+    window.removeEventListener(CHANGE_EVENT, onChange);
+  };
 }
 
 function readRaw(): string | null {

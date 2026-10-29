@@ -1,3 +1,5 @@
+import type { Summary } from "./schemas";
+
 export type SourceKind = "pdf" | "text";
 
 export type StudyDoc = {
@@ -7,6 +9,7 @@ export type StudyDoc = {
   text: string;
   pages?: number;
   createdAt: number;
+  summary?: Summary;
 };
 
 export type ApiError = { error: string; message: string };
