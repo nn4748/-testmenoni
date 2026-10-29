@@ -12,7 +12,7 @@ const STEPS = ["ارفع الملزمة أو الصق النص", "ذاكرلي �
 
 export default function Home() {
   return (
-    <div className="space-y-10">
+    <div className="page space-y-10">
       <section className="animate-rise space-y-5 pt-6 text-center">
         <span className="chip mx-auto bg-surface">
           <SparkIcon className="size-3.5 text-text" />

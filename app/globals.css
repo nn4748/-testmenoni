@@ -2,66 +2,97 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* لوحة أحادية فخمة: أسود، أبيض، ودرجات رصاصي. */
+/*
+ * نظام ألوان أحادي. الوضع الليلي هو الأساس.
+ * العمق يجي من الضوء والظل، ما يجي من اللون.
+ */
 :root {
-  --bg: #f3f3f1;
+  --bg: #f4f4f2;
   --surface: #ffffff;
-  --surface-2: #ebebe8;
-  --border: #dcdcd8;
-  --text: #0b0b0c;
-  --muted: #6d6d6a;
-  --brand: #0b0b0c;
-  --brand-soft: #e7e7e4;
-  --brand-ink: #ffffff;
-  --danger: #a8321f;
-  --danger-soft: #f6e7e3;
-  --glow: rgb(0 0 0 / 0.06);
-  --shadow:
-    0 1px 0 rgb(255 255 255 / 0.8) inset, 0 1px 2px rgb(0 0 0 / 0.04), 0 12px 32px -16px rgb(0 0 0 / 0.18);
+  --surface-2: #ecece9;
+  --surface-3: #e2e2de;
+  --border: rgb(0 0 0 / 0.08);
+  --border-strong: rgb(0 0 0 / 0.14);
+  --text: #0a0a0a;
+  --muted: #5c5c5c;
+  --faint: #8f8f8f;
+  --brand: #0a0a0a;
+  --brand-soft: #ecece9;
+  --brand-ink: #fafafa;
+  --danger: #0a0a0a;
+  --danger-soft: #ecece9;
+  --highlight: rgb(255 255 255 / 0.9);
+  --spot: rgb(0 0 0 / 0.05);
+  --glass: rgb(255 255 255 / 0.6);
+  --shadow-deep: 0 1px 1px rgb(0 0 0 / 0.04), 0 24px 48px -24px rgb(0 0 0 / 0.22);
+  --grain-opacity: 0.05;
 }
 
 .dark {
-  --bg: #08080a;
-  --surface: #121214;
-  --surface-2: #1b1b1e;
-  --border: #29292d;
-  --text: #f4f4f2;
-  --muted: #95959a;
-  --brand: #f4f4f2;
-  --brand-soft: #1e1e21;
-  --brand-ink: #0b0b0c;
-  --danger: #f08a76;
-  --danger-soft: #2c1814;
-  --glow: rgb(255 255 255 / 0.06);
-  --shadow:
-    0 1px 0 rgb(255 255 255 / 0.05) inset, 0 1px 2px rgb(0 0 0 / 0.5), 0 16px 40px -18px rgb(0 0 0 / 0.9);
+  --bg: #050505;
+  --surface: #0b0b0b;
+  --surface-2: #111111;
+  --surface-3: #171717;
+  --border: rgb(255 255 255 / 0.07);
+  --border-strong: rgb(255 255 255 / 0.12);
+  --text: #f5f5f5;
+  --muted: #a3a3a3;
+  --faint: #6b6b6b;
+  --brand: #f5f5f5;
+  --brand-soft: #171717;
+  --brand-ink: #050505;
+  --danger: #f5f5f5;
+  --danger-soft: #171717;
+  --highlight: rgb(255 255 255 / 0.1);
+  --spot: rgb(255 255 255 / 0.06);
+  --glass: rgb(17 17 17 / 0.55);
+  --shadow-deep: 0 1px 1px rgb(0 0 0 / 0.6), 0 32px 64px -28px rgb(0 0 0 / 0.95);
+  --grain-opacity: 0.07;
 }
 
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-text: var(--text);
   --color-muted: var(--muted);
+  --color-faint: var(--faint);
   --color-brand: var(--brand);
   --color-brand-soft: var(--brand-soft);
   --color-brand-ink: var(--brand-ink);
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
   --font-sans: var(--font-arabic), system-ui, sans-serif;
-  --shadow-lux: var(--shadow);
+  --font-display: var(--font-display-serif), "Times New Roman", serif;
+  --shadow-lux: var(--shadow-deep);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* سلّم المقاسات: 12 / 14 / 16 / 20 / 28 / 40 / 64 / 96 */
+  --text-display-sm: 2.5rem;
+  --text-display-sm--line-height: 1.05;
+  --text-display: 4rem;
+  --text-display--line-height: 1;
+  --text-display-lg: 6rem;
+  --text-display-lg--line-height: 0.95;
+}
+
+html {
+  background: var(--bg);
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
 }
 
 body {
   color: var(--text);
+  background: var(--bg);
   -webkit-tap-highlight-color: transparent;
-  /* إضاءة خفيفة من الأعلى وشبكة ناعمة تعطي عمق للخلفية. */
-  background:
-    radial-gradient(60rem 30rem at 50% -10rem, var(--glow), transparent 70%),
-    linear-gradient(var(--glow) 1px, transparent 1px) 0 0 / 100% 48px,
-    var(--bg);
-  background-attachment: fixed;
+  font-feature-settings: "tnum" 0;
 }
 
 ::selection {
@@ -69,11 +100,73 @@ body {
   color: var(--bg);
 }
 
+:focus-visible {
+  outline: 1.5px solid var(--text);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* حبيبات فيلم خفيفة فوق الموقع كله. */
+.grain {
+  pointer-events: none;
+  position: fixed;
+  inset: -50%;
+  z-index: 60;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 1.2s steps(6) infinite;
+}
+
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-3%, 2%); }
+  40% { transform: translate(2%, -4%); }
+  60% { transform: translate(-4%, -2%); }
+  80% { transform: translate(3%, 3%); }
+  100% { transform: translate(0, 0); }
+}
+
+@utility page {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 42rem;
+  padding-inline: 1rem;
+}
+
+@utility font-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.035em;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+@utility eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--faint);
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/*
+ * بطاقة زجاجية: ضبابية، خط مضيء على الحافة العلوية، ظل عميق،
+ * وبقعة ضوء تلحق المؤشر (المتغيرات --mx و --my من SpotlightProvider).
+ */
 @utility surface {
+  position: relative;
+  isolation: isolate;
   border-radius: 1.25rem;
   border: 1px solid var(--border);
-  background: var(--surface);
-  box-shadow: var(--shadow);
+  background:
+    radial-gradient(28rem circle at var(--mx, 50%) var(--my, -20%), var(--spot), transparent 45%),
+    linear-gradient(180deg, var(--highlight), transparent 1.5px) top / 100% 1.5px no-repeat,
+    var(--glass);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  box-shadow: var(--shadow-deep);
 }
 
 @utility chip {
@@ -83,37 +176,50 @@ body {
   border-radius: 999px;
   border: 1px solid var(--border);
   background: var(--surface-2);
-  padding: 0.125rem 0.625rem;
+  padding: 0.1875rem 0.625rem;
   font-size: 0.75rem;
+  line-height: 1.4;
   color: var(--muted);
 }
 
+/* زر أساسي بمظهر معدن مصقول. */
 @utility btn-primary {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   border-radius: 0.875rem;
+  padding-inline: 1.25rem;
   font-weight: 600;
   color: var(--brand-ink);
-  background: linear-gradient(180deg, color-mix(in oklab, var(--brand) 82%, var(--brand-ink)) 0%, var(--brand) 55%);
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.22), transparent 50%),
+    linear-gradient(180deg, color-mix(in oklab, var(--brand) 88%, var(--brand-ink)), var(--brand));
   box-shadow:
-    0 1px 0 rgb(255 255 255 / 0.18) inset,
-    0 0 0 1px var(--brand),
-    0 8px 20px -10px rgb(0 0 0 / 0.5);
+    inset 0 1px 0 rgb(255 255 255 / 0.35),
+    inset 0 -1px 0 rgb(0 0 0 / 0.25),
+    0 0 0 1px color-mix(in oklab, var(--brand) 80%, transparent),
+    0 10px 24px -12px rgb(0 0 0 / 0.6);
   transition:
-    transform 150ms,
-    box-shadow 150ms,
-    opacity 150ms;
+    transform 400ms var(--ease-out-expo),
+    box-shadow 400ms var(--ease-out-expo),
+    opacity 200ms;
   &:hover:not(:disabled) {
-    transform: translateY(-1px);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.4),
+      inset 0 -1px 0 rgb(0 0 0 / 0.25),
+      0 0 0 1px var(--brand),
+      0 16px 32px -14px rgb(0 0 0 / 0.7);
   }
   &:active:not(:disabled) {
-    transform: translateY(0) scale(0.99);
+    transform: translateY(1px) scale(0.985);
+    box-shadow:
+      inset 0 2px 4px rgb(0 0 0 / 0.25),
+      0 0 0 1px var(--brand);
   }
   &:disabled {
-    opacity: 0.35;
-    box-shadow: none;
+    opacity: 0.3;
   }
 }
 
@@ -123,13 +229,63 @@ body {
   justify-content: center;
   gap: 0.5rem;
   border-radius: 0.875rem;
+  padding-inline: 1.25rem;
   font-weight: 600;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
-  transition: background 150ms;
+  border: 1px solid var(--border-strong);
+  background: var(--glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px 0 var(--highlight);
+  transition:
+    background 300ms,
+    transform 400ms var(--ease-out-expo);
   &:hover:not(:disabled) {
+    background: var(--surface-3);
+  }
+  &:active:not(:disabled) {
+    transform: translateY(1px) scale(0.985);
+  }
+  &:disabled {
+    opacity: 0.35;
+  }
+}
+
+@utility btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  border-radius: 0.75rem;
+  padding-inline: 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--muted);
+  transition:
+    color 200ms,
+    background 200ms;
+  &:hover {
+    color: var(--text);
     background: var(--surface-2);
+  }
+}
+
+/* لمعة تمر على العنصر (البطاقات وقت القلب). */
+@utility sheen {
+  position: relative;
+  overflow: hidden;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.18) 50%, transparent 65%);
+    transform: translateX(-120%);
+  }
+}
+
+@keyframes sheen-pass {
+  to {
+    transform: translateX(120%);
   }
 }
 
@@ -143,30 +299,19 @@ body {
   }
 }
 
-@keyframes rise {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 @utility animate-float {
   animation: float 6s ease-in-out infinite;
 }
 
-@utility animate-rise {
-  animation: rise 600ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-
 @media (prefers-reduced-motion: reduce) {
+  .grain {
+    animation: none;
+  }
   *,
   *::before,
   *::after {
-    animation: none !important;
-    transition: none !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

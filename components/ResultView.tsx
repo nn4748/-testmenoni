@@ -22,7 +22,7 @@ export default function ResultView() {
   const result = results.find((r) => r.id === id);
   if (!result) {
     return (
-      <div className="space-y-4 py-16 text-center">
+      <div className="page space-y-4 py-16 text-center">
         <p className="text-lg font-semibold">ما لقينا هذي النتيجة</p>
         <Link href="/library" className="btn-primary h-11 px-5">
           ارجع لملفاتي
@@ -32,7 +32,7 @@ export default function ResultView() {
   }
 
   return (
-    <div className="space-y-5 pt-4">
+    <div className="page space-y-5 pt-4">
       <header>
         <Link href="/library" className="text-sm text-muted hover:text-text">
           → ملفاتي

@@ -13,7 +13,7 @@ export default function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label="تبديل الوضع الليلي"
-      className="grid size-10 place-items-center rounded-full text-muted hover:bg-surface-2"
+      className="grid size-9 place-items-center rounded-xl text-muted transition hover:bg-surface-2 hover:text-text"
     >
       <svg className="size-5 dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
         <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />

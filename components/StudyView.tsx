@@ -36,7 +36,7 @@ export default function StudyView() {
 
   if (doc === null) {
     return (
-      <div className="space-y-4 py-16 text-center">
+      <div className="page space-y-4 py-16 text-center">
         <p className="text-lg font-semibold">ما لقينا هذا الملف</p>
         <p className="text-muted">يمكن انحذف من المتصفح. ارفعه مرة ثانية.</p>
         <Link href="/" className="btn-primary px-5 py-3">
@@ -49,7 +49,7 @@ export default function StudyView() {
   const words = doc.text.split(/\s+/).length;
 
   return (
-    <div className="space-y-5 pt-2">
+    <div className="page space-y-5 pt-2">
       <section className="flex items-start gap-3">
         <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-text text-bg shadow-lg">
           <FileIcon className="size-6" />
@@ -66,8 +66,8 @@ export default function StudyView() {
         </div>
       </section>
 
-      <div role="tablist" className="sticky top-14 z-[5] -mx-4 bg-bg/90 px-4 py-2 backdrop-blur">
-        <div className="grid grid-cols-3 gap-1 rounded-xl bg-surface-2 p-1">
+      <div role="tablist" className="sticky top-[4.5rem] z-[5] -mx-4 px-4 py-2">
+        <div className="grid grid-cols-3 gap-1 rounded-2xl border border-border bg-[var(--glass)] p-1 shadow-lux backdrop-blur-2xl">
           {TABS.map(({ id: tabId, label, icon: Icon }) => (
             <button
               key={tabId}

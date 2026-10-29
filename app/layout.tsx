@@ -1,45 +1,55 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans_Arabic } from "next/font/google";
+import { IBM_Plex_Sans_Arabic, Instrument_Serif } from "next/font/google";
 import Header from "@/components/Header";
+import Providers from "@/components/Providers";
 import "./globals.css";
 
 const plexArabic = IBM_Plex_Sans_Arabic({
   variable: "--font-arabic",
   subsets: ["arabic", "latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
+});
+
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-display-serif",
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
-  title: "ذاكرلي",
+  title: "ذاكرلي · Study, distilled.",
   description: "حوّل ملزمتك لملخص وبطاقات مراجعة واختبار في دقيقة.",
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f3f3f1" },
-    { media: "(prefers-color-scheme: dark)", color: "#08080a" },
-  ],
+  themeColor: "#050505",
 };
 
-// يطبّق الوضع الليلي قبل أول رسم عشان ما تومض الصفحة.
-const themeScript = `try{var t=localStorage.getItem("zakerli:theme");if(t==="dark"||(!t&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark")}catch(e){}`;
+// الوضع الليلي هو الأساس، إلا إذا اختار الطالب الفاتح. يتطبّق قبل أول رسم عشان ما تومض الصفحة.
+const themeScript = `try{if(localStorage.getItem("zakerli:theme")!=="light")document.documentElement.classList.add("dark")}catch(e){document.documentElement.classList.add("dark")}`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="ar"
       dir="rtl"
-      className={`${plexArabic.variable} h-full antialiased`}
+      className={`${plexArabic.variable} ${instrumentSerif.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className="min-h-full flex flex-col font-sans">
-        <Header />
-        <main className="mx-auto w-full max-w-2xl flex-1 px-4 pb-16 pt-4">
-          {children}
-        </main>
+      <body className="flex min-h-full flex-col font-sans">
+        <Providers>
+          <Header />
+          <main className="flex-1 pb-20 pt-20">{children}</main>
+          <footer className="page flex items-center justify-between border-t border-border py-6 text-xs text-faint">
+            <span>ذاكرلي</span>
+            <span className="eyebrow">Study, distilled.</span>
+          </footer>
+        </Providers>
+        <div className="grain" aria-hidden />
       </body>
     </html>
   );

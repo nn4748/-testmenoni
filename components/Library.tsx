@@ -24,7 +24,7 @@ export default function Library() {
   }
 
   return (
-    <div className="space-y-6 pt-4">
+    <div className="page space-y-6 pt-4">
       <header className="flex items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">ملفاتي</h1>
