@@ -4,8 +4,8 @@ import { z } from "zod";
 import { AppError } from "./errors";
 import type { GenerateOptions } from "./ai";
 
-// أحدث موديل Flash عليه طبقة مجانية في Google AI Studio.
-export const GEMINI_MODEL = "gemini-3.8-flash";
+// موديلات عليها طبقة مجانية في Google AI Studio، بالترتيب. إذا واحد عليه ضغط ننتقل للي بعده.
+export const GEMINI_MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-2.5-flash", "gemini-3.5-flash-lite"];
 
 let client: GoogleGenAI | null = null;
 
@@ -24,10 +24,9 @@ export async function generateWithGemini<S extends z.ZodType>({
 }: GenerateOptions<S>): Promise<z.infer<S>> {
   const jsonSchema = cleanSchema(z.toJSONSchema(schema));
 
-  let response;
-  try {
-    response = await getClient().models.generateContent({
-      model: GEMINI_MODEL,
+  const request = (model: string) =>
+    getClient().models.generateContent({
+      model,
       contents: prompt,
       config: {
         systemInstruction: system,
@@ -36,6 +35,10 @@ export async function generateWithGemini<S extends z.ZodType>({
         maxOutputTokens: maxTokens,
       },
     });
+
+  let response;
+  try {
+    response = await withFallback(request);
   } catch (err) {
     throw toAppError(err);
   }
@@ -65,6 +68,28 @@ function cleanSchema(node: unknown): unknown {
         : cleanSchema(value);
   }
   return out;
+}
+
+// 503 (ضغط مؤقت): نعيد مرة على نفس الموديل ثم ننتقل. 429 (حد الطلبات): ننتقل مباشرة، لأن كل موديل له حدّه.
+async function withFallback<T>(request: (model: string) => Promise<T>): Promise<T> {
+  let lastError: unknown;
+  for (const model of GEMINI_MODELS) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        return await request(model);
+      } catch (err) {
+        lastError = err;
+        const status = err instanceof ApiError ? err.status : 0;
+        if (status === 503 && attempt === 0) {
+          await new Promise((r) => setTimeout(r, 800));
+          continue;
+        }
+        if (status === 503 || status === 429 || status === 404) break;
+        throw err;
+      }
+    }
+  }
+  throw lastError;
 }
 
 function safeJson(text: string | undefined): unknown {
