@@ -1,11 +1,14 @@
 import "server-only";
-import { ApiError, FinishReason, GoogleGenAI } from "@google/genai";
+import { ApiError, FinishReason, GoogleGenAI, ThinkingLevel } from "@google/genai";
 import { z } from "zod";
 import { AppError } from "./errors";
 import type { GenerateOptions } from "./ai";
 
 // موديلات عليها طبقة مجانية في Google AI Studio، بالترتيب. إذا واحد عليه ضغط ننتقل للي بعده.
 export const GEMINI_MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-2.5-flash", "gemini-3.5-flash-lite"];
+
+// كل محاولة لها حد، عشان مجموع المحاولات ما يتعدى حد Vercel (300 ثانية).
+const ATTEMPT_TIMEOUT_MS = 70_000;
 
 let client: GoogleGenAI | null = null;
 
@@ -33,6 +36,9 @@ export async function generateWithGemini<S extends z.ZodType>({
         responseMimeType: "application/json",
         responseJsonSchema: jsonSchema,
         maxOutputTokens: maxTokens,
+        // تفكير قليل: الملخص والأسئلة ما تحتاج تفكير طويل، وهذا يسرّع الرد كثير.
+        thinkingConfig: model.startsWith("gemini-2.5") ? { thinkingBudget: 0 } : { thinkingLevel: ThinkingLevel.LOW },
+        abortSignal: AbortSignal.timeout(ATTEMPT_TIMEOUT_MS),
       },
     });
 
@@ -80,6 +86,7 @@ async function withFallback<T>(request: (model: string) => Promise<T>): Promise<
       } catch (err) {
         lastError = err;
         const status = err instanceof ApiError ? err.status : 0;
+        if (isTimeout(err)) break;
         if (status === 503 && attempt === 0) {
           await new Promise((r) => setTimeout(r, 800));
           continue;
@@ -92,6 +99,10 @@ async function withFallback<T>(request: (model: string) => Promise<T>): Promise<
   throw lastError;
 }
 
+function isTimeout(err: unknown): boolean {
+  return err instanceof Error && (err.name === "TimeoutError" || err.name === "AbortError");
+}
+
 function safeJson(text: string | undefined): unknown {
   try {
     return text ? JSON.parse(text) : null;
@@ -102,6 +113,7 @@ function safeJson(text: string | undefined): unknown {
 
 function toAppError(err: unknown): AppError {
   if (err instanceof AppError) return err;
+  if (isTimeout(err)) return new AppError("busy");
   if (err instanceof ApiError) {
     console.error("gemini error", err.status, err.message);
     if (err.status === 401 || err.status === 403) return new AppError("no_api_key");
