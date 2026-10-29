@@ -147,8 +147,6 @@ body {
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--faint);
-  direction: ltr;
-  unicode-bidi: isolate;
 }
 
 /*

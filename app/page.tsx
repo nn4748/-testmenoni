@@ -1,72 +1,121 @@
-import { CardsIcon, LockIcon, QuizIcon, SparkIcon, SummaryIcon } from "@/components/Icons";
 import HeroStage from "@/components/hero/HeroStage";
+import { LockIcon } from "@/components/Icons";
+import { CardsPreview, QuizPreview, SummaryPreview } from "@/components/landing/Previews";
+import Magnetic from "@/components/motion/Magnetic";
+import { MaskLines, Reveal } from "@/components/motion/Reveal";
 import UploadForm from "@/components/UploadForm";
 
-const FEATURES = [
-  { icon: SummaryIcon, title: "ملخص منظم", body: "عناوين ونقاط رئيسية تغنيك عن قراية الملزمة كاملة." },
-  { icon: CardsIcon, title: "بطاقات مراجعة", body: "سؤال في الوجه وجواب في الخلف، اقلبها وراجع بسرعة." },
-  { icon: QuizIcon, title: "اختبار ذكي", body: "أسئلة اختيار من متعدد مع شرح، ويطلع لك نقاط ضعفك." },
+const CHAPTERS = [
+  {
+    no: "01",
+    en: "Summary",
+    ar: "ملخص يغنيك عن الملزمة",
+    body: "عناوين واضحة ونقاط مركّزة ومصطلحات مهمة، بنفس ترتيب المحاضرة وبنفس لغتها.",
+    preview: <SummaryPreview />,
+  },
+  {
+    no: "02",
+    en: "Flashcards",
+    ar: "بطاقات تثبّت المعلومة",
+    body: "سؤال في الوجه وجواب في الخلف. اقلبها، علّم اللي عرفته، وارجع للي فاتك.",
+    preview: <CardsPreview />,
+  },
+  {
+    no: "03",
+    en: "Quiz",
+    ar: "اختبار يكشف نقاط ضعفك",
+    body: "أسئلة اختيار من متعدد بشرح لكل جواب، وبعد التسليم تعرف بالضبط وش تراجع.",
+    preview: <QuizPreview />,
+  },
 ];
-
-const STEPS = ["ارفع الملزمة أو الصق النص", "ذاكرلي يقرأها ويجهّز المواد", "ذاكر واختبر نفسك"];
 
 export default function Home() {
   return (
-    <div className="page space-y-10">
-      <section className="animate-rise space-y-5 pt-6 text-center">
-        <span className="chip mx-auto bg-surface">
-          <SparkIcon className="size-3.5 text-text" />
-          مدعوم بالذكاء الاصطناعي
-        </span>
-        <h1 className="text-[2rem] font-bold leading-[1.3] sm:text-5xl sm:leading-[1.25]">
-          ملزمتك تصير
-          <br />
-          <span className="bg-gradient-to-l from-neutral-500 via-neutral-950 to-neutral-500 bg-clip-text text-transparent dark:from-neutral-500 dark:via-white dark:to-neutral-500">
-            مذاكرة جاهزة
-          </span>{" "}
-          في دقيقة
-        </h1>
-        <p className="mx-auto max-w-md leading-7 text-muted">
-          ارفع ملف المحاضرة، وخذ ملخص منظم وبطاقات مراجعة واختبار يكشف نقاط ضعفك، بنفس لغة الملزمة.
+    <div className="-mt-20">
+      {/* الواجهة: مجسم، عنوان واحد قوي، وزر واحد. */}
+      <section className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden px-4 pb-16 pt-28 text-center">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-[70vh] bg-[radial-gradient(50%_60%_at_50%_0%,var(--spot),transparent)]"
+        />
+        <HeroStage className="h-[42svh] w-full max-w-xl sm:h-[46vh]" />
+
+        <div className="relative -mt-4 space-y-6">
+          <Reveal>
+            <p className="eyebrow" dir="ltr">Zakerly — AI study companion</p>
+          </Reveal>
+          <h1 className="font-display text-[3.4rem] leading-[0.92] sm:text-display-lg">
+            <MaskLines lines={["Study.", <em key="d" className="text-muted">Distilled.</em>]} delay={0.15} />
+          </h1>
+          <Reveal delay={0.45}>
+            <p className="mx-auto max-w-sm text-lg leading-8 text-muted">
+              ارفع ملزمتك، وخذ ملخص وبطاقات مراجعة واختبار، في دقيقة.
+            </p>
+          </Reveal>
+          <Reveal delay={0.6}>
+            <Magnetic className="inline-block">
+              <a href="#start" className="btn-primary h-13 px-7 text-base">
+                ابدأ برفع ملزمة
+                <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                  <path d="M12 5v14M6 13l6 6 6-6" />
+                </svg>
+              </a>
+            </Magnetic>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ثلاث فصول: كل مخرج له مشهده. */}
+      <div className="page space-y-28 py-12 sm:space-y-40">
+        {CHAPTERS.map((c) => (
+          <section key={c.no} className="space-y-10">
+            <div className="space-y-4">
+              <Reveal>
+                <p className="eyebrow">
+                  <span dir="ltr" className="inline-block">
+                    {c.no} <span className="mx-2 text-border-strong">/</span> {c.en}
+                  </span>
+                </p>
+              </Reveal>
+              <h2 className="text-[2rem] font-semibold leading-[1.25] sm:text-[2.5rem]">
+                <MaskLines lines={[c.ar]} />
+              </h2>
+              <Reveal delay={0.15}>
+                <p className="max-w-md leading-8 text-muted">{c.body}</p>
+              </Reveal>
+            </div>
+            <Reveal delay={0.2}>{c.preview}</Reveal>
+          </section>
+        ))}
+      </div>
+
+      {/* الرفع */}
+      <section id="start" className="page scroll-mt-24 space-y-8 py-24">
+        <div className="space-y-4 text-center">
+          <Reveal>
+            <p className="eyebrow">Begin</p>
+          </Reveal>
+          <h2 className="font-display text-display-sm sm:text-display">
+            <MaskLines
+              lines={[
+                <span key="l">
+                  Your lecture, <em className="text-muted">please.</em>
+                </span>,
+              ]}
+            />
+          </h2>
+          <Reveal delay={0.1}>
+            <p className="text-muted">PDF حتى ٢٠ ميجا، أو الصق النص مباشرة.</p>
+          </Reveal>
+        </div>
+        <Reveal delay={0.15}>
+          <UploadForm />
+        </Reveal>
+        <p className="flex items-center justify-center gap-1.5 text-xs text-faint">
+          <LockIcon className="size-3.5" />
+          ما نخزّن ملفاتك عندنا. تنحفظ في جهازك، بدون تسجيل دخول.
         </p>
       </section>
-
-      <HeroStage className="mx-auto h-80 w-full max-w-md" />
-
-      <UploadForm />
-
-      <section className="grid gap-3 sm:grid-cols-3">
-        {FEATURES.map(({ icon: Icon, title, body }) => (
-          <div key={title} className="surface flex gap-3 p-4 sm:block">
-            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-text text-bg shadow-md sm:mb-3">
-              <Icon />
-            </span>
-            <div>
-              <h2 className="font-semibold">{title}</h2>
-              <p className="mt-0.5 text-sm leading-6 text-muted">{body}</p>
-            </div>
-          </div>
-        ))}
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-lg font-bold">كيف يشتغل؟</h2>
-        <ol className="space-y-3">
-          {STEPS.map((step, i) => (
-            <li key={step} className="flex items-center gap-3">
-              <span className="grid size-8 shrink-0 place-items-center rounded-full border border-border bg-surface text-sm font-semibold shadow-sm">
-                {(i + 1).toLocaleString("ar-EG")}
-              </span>
-              <span>{step}</span>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <p className="flex items-center justify-center gap-1.5 text-xs text-muted">
-        <LockIcon className="size-3.5" />
-        ما نخزّن ملفاتك عندنا، تنحفظ في جهازك وبدون تسجيل دخول.
-      </p>
     </div>
   );
 }
